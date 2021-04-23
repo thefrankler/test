@@ -1,270 +1,277 @@
-import javax.swing.*;
-import java.util.HashSet;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.*;
 
 public class Sudoku {
 
-    public int[][] s = new int[9][9];
+    private Cell[][] cells = new Cell[9][9];
 
     public Sudoku() {
-        for (int r = 0; r < 9; r++) {
-            for (int c = 0; c < 9; c++) {
-                s[r][c] = 0;
-            }
+        for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
+            cells[row][column] = new Cell(row,column);
         }
     }
 
-    public Sudoku(int[][] t) {
-        for (int r = 0; r < 9; r++) for (int c = 0; c < 9; c++) {
-            s[r][c] = t[r][c];
+    public Sudoku(int[][] puzzle) {
+        for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
+            cells[row][column] = new Cell(row,column).setValue(puzzle[row][column]);
         }
     }
 
-    @Override
-    public String toString()
-    {
-        String str = "";
-        for (int r = 0; r < 9; r++) {
-            for (int c = 0; c < 9; c++) {
-                str = str + Integer.toString(this.s[r][c]) + "  ";
-            }
-            str = str + System.lineSeparator();
-        }
-        return str;
+    public Sudoku(Cell[][] cells) {
+        this.cells = cells;
     }
 
-    public int[] getRow(int r) {
-        int[] row = new int[9];
-        for (int c = 0; c < 9; c++) {
-            row[c] = s[r][c];
+    public Cell getCell(int row, int column) {
+        return cells[row][column];
+    }
+
+    private CellSet getRow(int rowIndex) {
+        CellSet row = new CellSet();
+        for (int columnIndex = 0; columnIndex < 9; columnIndex++) {
+            row.addCell(cells[rowIndex][columnIndex], columnIndex);
         }
         return row;
     }
 
-    public int[] getColumn(int c) {
-        int[] column = new int[9];
-        for (int r = 0; r < 9; r++) {
-            column[r] = s[r][c];
+    private CellSet getColumn(int columnIndex) {
+        CellSet column = new CellSet();
+        for (int rowIndex = 0; rowIndex < 9; rowIndex++) {
+            column.addCell(cells[rowIndex][columnIndex], rowIndex);
         }
         return column;
     }
 
-    public int[] getBox(int x, int y) {
-        int[] box = new int[9];
-        box[0] = s[0 + 3 * x][0 + 3 * y];
-        box[1] = s[0 + 3 * x][1 + 3 * y];
-        box[2] = s[0 + 3 * x][2 + 3 * y];
-        box[3] = s[1 + 3 * x][0 + 3 * y];
-        box[4] = s[1 + 3 * x][1 + 3 * y];
-        box[5] = s[1 + 3 * x][2 + 3 * y];
-        box[6] = s[2 + 3 * x][0 + 3 * y];
-        box[7] = s[2 + 3 * x][1 + 3 * y];
-        box[8] = s[2 + 3 * x][2 + 3 * y];
+    private CellSet getBox(int boxRow, int boxColumn) {
+        if (boxRow < 0 || boxRow >= 3) {
+            throw new IllegalArgumentException("Box row must be an integer between 0 and 2, received " + boxRow);
+        }
+        if (boxColumn < 0 || boxColumn >= 3) {
+            throw new IllegalArgumentException("Box column must be an integer between 0 and 2, received " + boxColumn);
+        }
+
+        CellSet box = new CellSet();
+        for (int index = 0; index < 9; index++) {
+            box.addCell( cells[index/3 + 3 * boxRow][index%3 + 3 * boxColumn], index);
+        }
         return box;
     }
 
-    private boolean checkFull() {
-        for (int r = 0; r < 9; r++) {
-            for (int c = 1; c < 9; c++) {
-                if (s[r][c] == 0) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    public boolean checkSolution() {
-        //check complete
-        for (int r = 0; r < 9; r++) {
-            for (int c = 1; c < 9; c++) {
-                if (s[r][c] == 0) {
-                    return false;
-                }
-            }
-        }
-
-
-        //check rows
-        for (int r = 0; r < 9; r++) {
-            int[] row = getRow(r);
-            for (int c = 1; c < 9; c++) {
-                for (int d = 0; d < c; d++) {
-                    if (row[c] == row[d]) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-
-        //check columns
-        for (int c = 0; c < 9; c++) {
-            int[] column = getColumn(c);
-            for (int r = 1; r < 9; r++) {
-                for (int d = 0; d < r; d++) {
-                    if (column[r] == column[d]) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        //check boxes
-        for (int r = 0; r < 3; r++) {
-            for (int c = 0; c < 3; c++) {
-                int[] box = getBox(r, c);
-                for (int f = 1; f < 9; f++) {
-                    for (int d = 0; d < f; d++) {
-                        if (box[f] == box[d]) {
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
-    public Sudoku complete() {
-        Stack<Sudoku> options = new Stack<>();
-        HashSet<Sudoku> solutions = new HashSet<>();
-        int n;
-
-        if (this.checkFull()) {
-            if (this.checkSolution()) return this;
-        } else {
-            Sudoku news = new Sudoku(this.s);
-            options.push(news);
-
-
-            while (options.size() > 0 && solutions.size()<2) {
-                Sudoku sud = options.pop();
-                int i = 0;
-                while (i < 10) {  //check for cells with i options
-                    for (int r = 0; r < 9; r++) for (int c = 0; c < 9; c++) {  // inefficient, could save all values of cellOptions first time around
-                        if (sud.s[r][c] == 0) {
-                            Vector<Integer> v = sud.cellOptions(r, c);
-                            if (v.size() == i) {
-                                for (int j = 0; j < i; j++) {
-                                    sud.s[r][c] = v.get(j);
-                                    if (sud.checkSolution()) {
-                                        Sudoku temp = new Sudoku(sud.s);
-                                        solutions.add(temp);
-                                    } else options.push(new Sudoku(sud.s));
-                                }
-                                i=100;
-                            }
-                        }
-                    }
-                    i++;
-                }
-            }
-
-            int m = solutions.size();
-//            System.out.println("number of solutions = "+Integer.toString(n));
-            if (m>=2) n = 2;
-            else if (m == 1) n = 1;
-            else n = 0;
-
-            if (n==0) {
-                JOptionPane.showMessageDialog(new JFrame(),
-                        "There are no solutions.",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-            } else if (n>1) {
-                JOptionPane.showMessageDialog(new JFrame(),
-                        "There is more than one solution.",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-            } else { // n == 1
-                return solutions.iterator().next();
-            }
-        }
-        return null;
-    }
-
-    public int checkUniqueSolution() //0 = no solutions, 1 = 1 solution, 2 = more solutions
-    {   Stack<Sudoku> options = new Stack<>();
-        HashSet<Sudoku> solutions = new HashSet<>();
-
-        if (this.checkFull()) {
-            if (this.checkSolution()) return 1;
-            else return 0;
-        } else {
-            Sudoku news = new Sudoku(this.s);
-            options.push(news);
-
-            while (options.size() > 0) {
-                Sudoku sud = options.pop();
-                int i = 0;
-                Main:
-                while (i < 10) {  //check for cells with i options
-                    for (int r = 0; r < 9; r++) for (int c = 0; c < 9; c++) {  // inefficient, could save all values of cellOptions first time around
-                        if (sud.s[r][c] == 0) {
-                            Vector<Integer> v = sud.cellOptions(r, c);
-                            if (v.size() == i) {
-                                for (int j = 0; j < i; j++) {
-                                    sud.s[r][c] = v.get(j);
-                                    if (sud.checkSolution()) {
-                                        Sudoku temp = new Sudoku(sud.s);
-                                        solutions.add(temp);
-                                        if (solutions.size() >=2) return 2; // remove if you want more than 2 solutions.
-                                    } else options.push(new Sudoku(sud.s));
-                                }
-                                break Main;
-                            }
-                        }
-                    }
-                    i++;
-                }
-            }
-
-            int n = solutions.size();
-//            System.out.println("number of solutions = "+Integer.toString(n));
-            if (n>2) n = 2;
-            return n;
-        }
-    }
-
-    public Vector<Integer> cellOptions(int r, int c) {
-        int[] list = new int[9];
+    private Vector<Integer> cellOptions(int r, int c) {
+        boolean[] isDigitForbidden = new boolean[9];
         Vector<Integer> options = new Vector<>();
 
-        //check row
-        int[] row = getRow(r);
+        if (!cells[r][c].isEmpty()) {
+            options.add(cells[r][c].getValue());
+            return options ;
+        }
+
+        CellSet row = getRow(r);
+        CellSet column = getColumn(c);
+        CellSet box = getBox(r / 3, c / 3);
         for (int i = 0; i < 9; i++) {
-            if (row[i] != 0) {
-                list[row[i] - 1] = 1;
+            if (!row.getCell(i).isEmpty()) {
+                isDigitForbidden[row.getCell(i).getValue() - 1] = true;
+            }
+            if (!column.getCell(i).isEmpty()) {
+                isDigitForbidden[column.getCell(i).getValue() - 1] = true;
+            }
+            if (!box.getCell(i).isEmpty()) {
+                isDigitForbidden[box.getCell(i).getValue() - 1] = true;
             }
         }
 
-        //check column
-        int[] col = getColumn(c);
-        for (int i = 0; i < 9; i++) {
-            if (col[i] != 0) {
-                list[col[i] - 1] = 1;
-            }
-        }
-
-        //check box
-        int[] box = getBox(r / 3, c / 3);
-        for (int i = 0; i < 9; i++) {
-            if (box[i] != 0) {
-                list[box[i] - 1] = 1;
-            }
-        }
-
-        //check list
-        for (int i=0; i<9; i++){
-            if (list[i] == 0){
-                if (!options.contains(i+1)) {
-                    options.add(i + 1);
-                }
+        for (int digit=0; digit<9; digit++){
+            if (!isDigitForbidden[digit]){
+                options.add(digit + 1);
             }
         }
         return options;
     }
 
+    private boolean isFull() {
+        for (int row = 0; row < 9; row++) {
+            for (int column = 1; column < 9; column++) {
+                if (cells[row][column].isEmpty()) { return false; }
+            }
+        }
+        return true;
+    }
+
+    public boolean isSolved() {
+        if (!this.isFull()) { return false; }
+
+        // check rows and columns
+        for (int i = 0; i < 9; i++) {
+            if (!getRow(i).isSolved()) { return false; }
+            if (!getColumn(i).isSolved()) { return false; }
+        }
+
+        //check boxes
+        for (int row = 0; row < 3; row++) {
+            for (int column = 0; column < 3; column++) {
+                if (!getBox(row, column).isSolved()) { return false; }
+            }
+        }
+
+        return true;
+    }
+
+    public Sudoku getSolution() {
+        Stack<Sudoku> options = new Stack<>();
+        HashSet<Sudoku> solutions = new HashSet<>();
+
+        if (this.isFull()) {
+            if (this.isSolved()) {
+                return this;
+            } else {
+                throw new IllegalArgumentException("This sudoku can't be solved, as it already contains a mistake.");
+            }
+        } else {
+            Sudoku newSudoku = new Sudoku(this.cells);
+            options.push(newSudoku);
+
+            while (options.size() > 0 && solutions.size()<2) {
+                Sudoku partialSudoku = options.pop();
+                int numOptions = 1;
+                while (numOptions < 10) {
+                    // TODO inefficient, could save all values of cellOptions first time around
+                    for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
+                        if (partialSudoku.cells[row][column].isEmpty()) {
+                            Vector<Integer> cellOptions = partialSudoku.cellOptions(row, column);
+                            if (cellOptions.size() == numOptions) {
+                                for(int index = 0; index < cellOptions.size(); index++) {
+                                    partialSudoku.cells[row][column].setValue( cellOptions.get(index) );
+                                    Sudoku copy = new Sudoku(partialSudoku.cells);
+                                    if (copy.isSolved()) {
+                                        solutions.add(copy);
+                                    } else {
+                                        options.push(copy);
+                                    }
+                                }
+                                numOptions=100;
+                            }
+                        }
+                    }
+                    numOptions++;
+                }
+            }
+
+            int numSolutions = solutions.size();
+//            System.out.println("number of solutions = "+Integer.toString(numSolutions));
+            if (numSolutions>=2) {
+                return null;
+            } else if (numSolutions <= 0) {
+                throw new IllegalArgumentException("Sudoku has no solutions: \n" + this);
+            } else {
+                return solutions.iterator().next();
+            }
+        }
+    }
+
+    public static Sudoku getRandomPuzzle() {
+        Sudoku sudoku = new Sudoku();
+
+        Random rand = new Random();
+        long start = System.currentTimeMillis();
+        long end = start + 10*1000; // 10 seconds * 1000 ms/sec
+
+        while (System.currentTimeMillis() < end) {
+            //fill a cell randomly
+            int cell = rand.nextInt(81);
+            if (sudoku.getCell(cell / 9, cell % 9).isEmpty()) {
+                Vector<Integer> options = sudoku.cellOptions(cell/9,cell%9);
+
+                if (options.size() == 0) {
+                    // no options for cell, remove random cell
+                    int randomCell = rand.nextInt(81);
+                    sudoku.getCell(randomCell / 9, randomCell % 9).clear();
+                } else {
+                    int option = rand.nextInt(options.size());
+                    sudoku.getCell(cell / 9, cell % 9).setValue( options.get(option) );
+                }
+
+                Sudoku solution = sudoku.getSolution();
+                if (solution != null) {
+                    return solution;
+                }
+                // else there are multiple solutions, so continue
+            }
+        }
+        return new Sudoku();
+    }
+
+    public static Sudoku Minimise(Sudoku sudoku) {
+        Random rand = new Random();
+
+        //make list of unchecked cells
+        ArrayList<Cell> uncheckedCells = new ArrayList<>();
+        for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
+            uncheckedCells.add(sudoku.getCell(row, column));
+        }
+
+        long start = System.currentTimeMillis();
+        long finish = start + 30*1000; // 30 seconds * 1000 ms/sec
+        while (System.currentTimeMillis() < finish && uncheckedCells.size()>0) {
+
+            //randomly select a cell to check
+            int cellIndex = rand.nextInt(uncheckedCells.size());
+            Cell cell = uncheckedCells.get(cellIndex);
+
+            int tempValue = cell.getValue();
+            cell.clear();
+
+            if (sudoku.getSolution() == null) {
+                // there are multiple solutions
+                cell.setValue(tempValue);
+            }
+
+            uncheckedCells.remove(cellIndex);
+        }
+        return sudoku;
+    }
+
+//    public Sudoku randomEasyPuzzle() {
+//        Sudoku sud = getRandomSolvedPuzzle();
+//        Random rn = new Random();
+//
+//        boolean end = true;
+//        for (int r=0; r<9; r++) for (int c=0; c<9; c++) {
+//            if (sud.grid[r][c] != 0 && sud.cellOptions(r,c).size() == 0) { // if there is a nonempty cell with options open
+//                end = false;
+//            }
+//        }
+//
+//        while (!end) {
+//            //randomly delete unnecessary cells
+//            int d = rn.nextInt(81);
+//            if (sud.grid[d / 9][d % 9] != 0) {
+//                Vector<Integer> options = sud.cellOptions(d / 9, d % 9);
+//                int size = options.size();
+//                if (size == 0) {
+//                    sud.grid[d / 9][d % 9] = 0;
+//                }
+//            }
+//
+//            end = true;
+//            for (int r=0; r<9; r++) for (int c=0; c<9; c++) {
+//                if (sud.grid[r][c] != 0 && sud.cellOptions(r,c).size() == 0) {
+//                    end = false;
+//                }
+//            }
+//        }
+//
+//        return sud;
+//    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder str = new StringBuilder();
+        for (int row = 0; row < 9; row++) {
+            for (int column = 0; column < 9; column++) {
+                str.append(this.cells[row][column].getValue()).append("  ");
+            }
+            str.append(System.lineSeparator());
+        }
+        return str.toString();
+    }
 }
