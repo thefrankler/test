@@ -2,22 +2,23 @@ import javax.swing.*;
 
 public class ButtonPanel extends JPanel {
 
-    public JButton checkButton, solveButton, nextButton;
+    static final long serialVersionUID = 42L;
+
+    public JButton check, solve, next;
 
     public ButtonPanel(MainPanel parent) {
+        check = new JButton("Check solution");
+        solve = new JButton("Solve");
+        next = new JButton("Next puzzle");
 
-        checkButton = new JButton("Check solution");
-        solveButton = new JButton("Solve");
-        nextButton = new JButton("Next puzzle");
-
-        add(checkButton);
-        add(solveButton);
-        add(nextButton);
+        add(check);
+        add(solve);
+        add(next);
 
         //add action listeners
-        checkButton.addActionListener(parent);
-        solveButton.addActionListener(parent);
-        nextButton.addActionListener(parent);
+        check.addActionListener(parent);
+        solve.addActionListener(parent);
+        next.addActionListener(parent);
     }
 
 }
