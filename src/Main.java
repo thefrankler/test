@@ -1,5 +1,3 @@
-package sudokuSolver;
-
 import javax.swing.*;
 import java.awt.*;
 
