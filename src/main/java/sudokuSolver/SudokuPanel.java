@@ -1,3 +1,8 @@
+package sudokuSolver;
+
+import sudokuSolver.models.Cell;
+import sudokuSolver.models.Sudoku;
+
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;
@@ -58,7 +63,7 @@ public class SudokuPanel extends JPanel {
             }
         }
 
-        setScreen(Sudoku.Minimise(Sudoku.getRandomPuzzle()));
+        setScreen(Sudoku.getRandomPuzzle());
 
     }
 
@@ -77,7 +82,6 @@ public class SudokuPanel extends JPanel {
             }
 
         return new Sudoku(cells);
-
     }
 
     public void setScreen(Sudoku sudoku){
