@@ -1,9 +1,6 @@
-module sudokuSolver;
+package sudokuSolver;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.Vector;
 
 public class Main {
 

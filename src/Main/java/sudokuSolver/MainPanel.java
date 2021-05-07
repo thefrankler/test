@@ -1,4 +1,4 @@
-module sudokuSolver;
+package sudokuSolver;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
