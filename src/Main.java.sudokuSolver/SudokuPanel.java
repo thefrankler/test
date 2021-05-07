@@ -1,3 +1,5 @@
+module sudokuSolver;
+
 import javax.swing.*;
 import javax.swing.text.NumberFormatter;
 import java.awt.*;

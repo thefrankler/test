@@ -1,3 +1,5 @@
+module sudokuSolver;
+
 import javax.swing.*;
 import java.util.HashSet;
 import java.util.Stack;
