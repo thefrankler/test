@@ -1,6 +1,6 @@
 <project>
-    <groupId>sudokuSolver</groupId>
-    <artifactId>solver</artifactId>
+    <groupId>sudoku-solver</groupId>
+    <artifactId>sudoku-solver</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <version>0.0.1</version>
 

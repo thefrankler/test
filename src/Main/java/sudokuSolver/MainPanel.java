@@ -10,35 +10,34 @@ public class MainPanel extends JPanel implements ActionListener {
 
     static final long serialVersionUID = 42L;
 
-    private SudokuPanel p;
-    private ButtonPanel b;
-    public Sudoku s;
+    private SudokuPanel sudokuPanel;
+    private ButtonPanel buttonPanel;
+    public Sudoku sudoku;
 
     public MainPanel() {
 
         //set variables
-        b = new ButtonPanel(this);
-        p = new SudokuPanel();
+        buttonPanel = new ButtonPanel(this);
+        sudokuPanel = new SudokuPanel();
 
         //Layout and borders
         setLayout(new BorderLayout());
-        p.setBorder(new EmptyBorder(50, 70, 50, 70)); //top, left, bottom, right
+        sudokuPanel.setBorder(new EmptyBorder(50, 70, 50, 70)); //top, left, bottom, right
+        buttonPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        this.add(BorderLayout.CENTER, p);
-        this.add(BorderLayout.SOUTH, b);
+        this.add(BorderLayout.CENTER, sudokuPanel);
+        this.add(BorderLayout.SOUTH, buttonPanel);
 
     }
 
-    public void actionPerformed(ActionEvent ev) {
+    public void actionPerformed(ActionEvent event) {
 
-        if (ev.getSource() == b.check) {
+        if (event.getSource() == buttonPanel.checkButton) {
+            sudoku = sudokuPanel.readScreen();
 
-            s = p.readScreen();
-            boolean solved = s.checkSolution();
-
-            if (solved) {
+            if (sudoku.checkSolution()) {
                 String[] options = {"Next puzzle"};
-                int n = JOptionPane.showOptionDialog(this,
+                int successPanel = JOptionPane.showOptionDialog(this,
                         "Congratulations, you have solved this puzzle!",
                         "Check solution",
                         JOptionPane.DEFAULT_OPTION,
@@ -46,8 +45,8 @@ public class MainPanel extends JPanel implements ActionListener {
                         null,
                         options,
                         null);
-                if (n == JOptionPane.DEFAULT_OPTION) {
-                    this.p.setScreen(this.p.randomPuzzle());
+                if (successPanel == JOptionPane.DEFAULT_OPTION) {
+                    this.sudokuPanel.setScreen(this.sudokuPanel.randomPuzzle());
                 }
             } else {
                 JOptionPane.showMessageDialog(this,
@@ -55,17 +54,16 @@ public class MainPanel extends JPanel implements ActionListener {
             }
 
 
+        } else if (event.getSource() == buttonPanel.solveButton) {
+            sudoku = sudokuPanel.readScreen();
 
-        } else if (ev.getSource() == b.solve) {
-            s = p.readScreen();
-
-            if(s.complete() != null) {
-                s = s.complete();
-                this.p.setScreen(s);
+            if(sudoku.complete() != null) {
+                sudoku = sudoku.complete();
+                this.sudokuPanel.setScreen(sudoku);
             }
 
-        } else if (ev.getSource() == b.next) {
-            this.p.setScreen(this.p.randomPuzzle());
+        } else if (event.getSource() == buttonPanel.nextButton) {
+            this.sudokuPanel.setScreen(this.sudokuPanel.randomPuzzle());
         }
 
     }
