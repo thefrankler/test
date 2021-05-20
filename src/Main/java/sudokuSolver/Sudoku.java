@@ -7,119 +7,90 @@ import java.util.Vector;
 
 public class Sudoku {
 
-    public int[][] cells = new int[9][9];
+    private Cell[][] cells = new Cell[9][9];
 
     public Sudoku() {
         for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
-            cells[row][column] = 0;
+            cells[row][column] = new Cell(row,column);;
         }
     }
 
-    public Sudoku(int[][] grid) {
+    public Sudoku(int[][] puzzle) {
         for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
-            cells[row][column] = grid[row][column];
+            cells[row][column] = new Cell(row,column).setValue(puzzle[row][column]);
         }
     }
 
-    @Override
-    public String toString()
-    {
-        String string = "";
-        for (int row = 0; row < 9; row++) {
-            for (int column = 0; column < 9; column++) {
-                string = string + this.cells[row][column] + "  ";
-            }
-            string = string + System.lineSeparator();
+    public Sudoku(Cell[][] cells) {
+        this.cells = cells;
+    }
+
+    public Cell getCell(int row, int column) {
+        return cells[row][column];
+    }
+
+    private CellSet getRow(int rowIndex) {
+        CellSet row = new CellSet();
+        for (int columnIndex = 0; columnIndex < 9; columnIndex++) {
+            row.addCell(cells[rowIndex][columnIndex], columnIndex);
         }
-        return string;
+        return row;
     }
 
-    public int[] getRow(int row) {
-        int[] rowCells = new int[9];
-        for (int column = 0; column < 9; column++) {
-            rowCells[column] = cells[row][column];
+    private CellSet getColumn(int columnIndex) {
+        CellSet column = new CellSet();
+        for (int rowIndex = 0; rowIndex < 9; rowIndex++) {
+            column.addCell(cells[rowIndex][columnIndex], rowIndex);
         }
-        return rowCells;
+        return column;
     }
 
-    public int[] getColumn(int column) {
-        int[] columnCells = new int[9];
-        for (int row = 0; row < 9; row++) {
-            columnCells[row] = cells[row][column];
+    private CellSet getBox(int boxRow, int boxColumn) {
+        if (boxRow < 0 || boxRow >= 3) {
+            throw new IllegalArgumentException("Box row must be an integer between 0 and 2, received " + boxRow);
         }
-        return columnCells;
+        if (boxColumn < 0 || boxColumn >= 3) {
+            throw new IllegalArgumentException("Box column must be an integer between 0 and 2, received " + boxColumn);
+        }
+
+        CellSet box = new CellSet();
+        for (int index = 0; index < 9; index++) {
+            box.addCell( cells[index/3 + 3 * boxRow][index%3 + 3 * boxColumn], index);
+        }
+        return box;
     }
 
-    public int[] getBox(int x, int y) {
-        int[] boxCells = new int[9];
-        boxCells[0] = cells[0 + 3 * x][0 + 3 * y];
-        boxCells[1] = cells[0 + 3 * x][1 + 3 * y];
-        boxCells[2] = cells[0 + 3 * x][2 + 3 * y];
-        boxCells[3] = cells[1 + 3 * x][0 + 3 * y];
-        boxCells[4] = cells[1 + 3 * x][1 + 3 * y];
-        boxCells[5] = cells[1 + 3 * x][2 + 3 * y];
-        boxCells[6] = cells[2 + 3 * x][0 + 3 * y];
-        boxCells[7] = cells[2 + 3 * x][1 + 3 * y];
-        boxCells[8] = cells[2 + 3 * x][2 + 3 * y];
-        return boxCells;
-    }
-
-    private boolean checkFull() {
+    private boolean isFull() {
         for (int row = 0; row < 9; row++) for (int column = 1; column < 9; column++) {
-            if (cells[row][column] == 0) {
-                return false;
-            }
+            if (cells[row][column].isEmpty()) { return false; }
         }
         return true;
     }
 
-    public boolean checkSolution() {
-        //checkButton complete
-        for (int row = 0; row < 9; row++) for (int column = 1; column < 9; column++) {
-            if (cells[row][column] == 0) {
-                return false;
-            }
+    public boolean isSolved() {
+        if (!this.isFull()) { return false; }
+
+        // check rows and columns
+        for (int i = 0; i < 9; i++) {
+            if (!getRow(i).isSolved()) { return false; }
+            if (!getColumn(i).isSolved()) { return false; }
         }
 
-        //checkButton rows
-        for (int row = 0; row < 9; row++) {
-            int[] rowCells = getRow(row);
-            for (int column = 1; column < 9; column++) for (int columnIndex = 0; columnIndex < column; columnIndex++) {
-                if (rowCells[column] == rowCells[columnIndex]) {
-                    return false;
-                }
-            }
-        }
-
-        //checkButton columns
-        for (int column = 0; column < 9; column++) {
-            int[] columnCells = getColumn(column);
-            for (int row = 1; row < 9; row++) for (int rowIndex = 0; rowIndex < row; rowIndex++) {
-                if (columnCells[row] == columnCells[rowIndex]) {
-                    return false;
-                }
-            }
-        }
-
-        //checkButton boxes
+        //check boxes
         for (int row = 0; row < 3; row++) for (int column = 0; column < 3; column++) {
-            int[] boxCells = getBox(row, column);
-            for (int digit = 1; digit < 9; digit++) for (int checkDigit = 0; checkDigit < digit; checkDigit++) {
-                if (boxCells[digit] == boxCells[checkDigit]) {
-                    return false;
-                }
-            }
+            if (!getBox(row, column).isSolved()) { return false; }
         }
+
         return true;
     }
 
-    public Sudoku complete() {
+    public Sudoku solve() {
         Stack<Sudoku> options = new Stack<>();
         HashSet<Sudoku> solutions = new HashSet<>();
         int result;
 
-        if (this.checkFull()) {
-            if (this.checkSolution()) return this;
+        if (this.isFull()) {
+            if (this.isSolved()) return this;
         } else {
             Sudoku newSudoku = new Sudoku(this.cells);
             options.push(newSudoku);
@@ -129,12 +100,12 @@ public class Sudoku {
                 int numOptions = 0;
                 while (numOptions < 10) {  //checkButton for cells with i options
                     for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {  // inefficient, could save all values of cellOptions first time around
-                        if (sudoku.cells[row][column] == 0) {
+                        if (sudoku.cells[row][column].isEmpty()) {
                             Vector<Integer> optionsVector = sudoku.cellOptions(row, column);
                             if (optionsVector.size() == numOptions) {
                                 for (int i = 0; i < numOptions; i++) {
-                                    sudoku.cells[row][column] = optionsVector.get(i);
-                                    if (sudoku.checkSolution()) {
+                                    sudoku.cells[row][column].setValue(optionsVector.get(i));
+                                    if (sudoku.isSolved()) {
                                         Sudoku temp = new Sudoku(sudoku.cells);
                                         solutions.add(temp);
                                     } else options.push(new Sudoku(sudoku.cells));
@@ -174,8 +145,8 @@ public class Sudoku {
     {   Stack<Sudoku> options = new Stack<>();
         HashSet<Sudoku> solutions = new HashSet<>();
 
-        if (this.checkFull()) {
-            if (this.checkSolution()) return 1;
+        if (this.isFull()) {
+            if (this.isSolved()) return 1;
             else return 0;
         } else {
             Sudoku newSudoku = new Sudoku(this.cells);
@@ -187,12 +158,12 @@ public class Sudoku {
                 Main:
                 while (numOptions < 10) {  //checkButton for cells with i options
                     for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {  // inefficient, could save all values of cellOptions first time around
-                        if (sudoku.cells[row][column] == 0) {
+                        if (sudoku.cells[row][column].isEmpty()) {
                             Vector<Integer> optionsVector = sudoku.cellOptions(row, column);
                             if (optionsVector.size() == numOptions) {
                                 for (int i = 0; i < numOptions; i++) {
-                                    sudoku.cells[row][column] = optionsVector.get(i);
-                                    if (sudoku.checkSolution()) {
+                                    sudoku.cells[row][column].setValue(optionsVector.get(i));
+                                    if (sudoku.isSolved()) {
                                         Sudoku temp = new Sudoku(sudoku.cells);
                                         solutions.add(temp);
                                         if (solutions.size() >=2) return 2; // remove if you want more than 2 solutions.
@@ -213,43 +184,48 @@ public class Sudoku {
         }
     }
 
-    public Vector<Integer> cellOptions(int row, int column) {
-        int[] list = new int[9];
+    public Vector<Integer> cellOptions(int rowIndex, int columnIndex) {
+        int[] isDigitForbidden = new int[9];
         Vector<Integer> options = new Vector<>();
 
         //checkButton row
-        int[] rowCells = getRow(row);
+        CellSet row = getRow(rowIndex);
+        CellSet column = getColumn(columnIndex);
+        CellSet box = getBox(rowIndex / 3, columnIndex / 3);
         for (int digit = 0; digit < 9; digit++) {
-            if (rowCells[digit] != 0) {
-                list[rowCells[digit] - 1] = 1;
+            if (!row.getCell(digit).isEmpty()) {
+                isDigitForbidden[row.getCell(digit).getValue() - 1] = 1;
             }
-        }
-
-        //checkButton column
-        int[] columnCells = getColumn(column);
-        for (int digit = 0; digit < 9; digit++) {
-            if (columnCells[digit] != 0) {
-                list[columnCells[digit] - 1] = 1;
+            if (!column.getCell(digit).isEmpty()) {
+                isDigitForbidden[column.getCell(digit).getValue() - 1] = 1;
             }
-        }
-
-        //checkButton box
-        int[] boxCells = getBox(row / 3, column / 3);
-        for (int digit = 0; digit < 9; digit++) {
-            if (boxCells[digit] != 0) {
-                list[boxCells[digit] - 1] = 1;
+            if (!box.getCell(digit).isEmpty()) {
+                isDigitForbidden[box.getCell(digit).getValue() - 1] = 1;
             }
         }
 
         //checkButton list
         for (int digit=0; digit<9; digit++){
-            if (list[digit] == 0){
+            if (isDigitForbidden[digit] == 0){
                 if (!options.contains(digit+1)) {
                     options.add(digit + 1);
                 }
             }
         }
         return options;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder string = new StringBuilder();
+        for (int row = 0; row < 9; row++) {
+            for (int column = 0; column < 9; column++) {
+                string.append(this.cells[row][column].getValue()).append("  ");
+            }
+            string.append(System.lineSeparator());
+        }
+        return string.toString();
     }
 
 }

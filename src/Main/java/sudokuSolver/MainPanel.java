@@ -35,7 +35,7 @@ public class MainPanel extends JPanel implements ActionListener {
         if (event.getSource() == buttonPanel.checkButton) {
             sudoku = sudokuPanel.readScreen();
 
-            if (sudoku.checkSolution()) {
+            if (sudoku.isSolved()) {
                 String[] options = {"Next puzzle"};
                 int successPanel = JOptionPane.showOptionDialog(this,
                         "Congratulations, you have solved this puzzle!",
@@ -57,8 +57,8 @@ public class MainPanel extends JPanel implements ActionListener {
         } else if (event.getSource() == buttonPanel.solveButton) {
             sudoku = sudokuPanel.readScreen();
 
-            if(sudoku.complete() != null) {
-                sudoku = sudoku.complete();
+            if(sudoku.solve() != null) {
+                sudoku = sudoku.solve();
                 this.sudokuPanel.setScreen(sudoku);
             }
 

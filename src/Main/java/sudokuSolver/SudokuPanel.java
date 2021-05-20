@@ -172,7 +172,7 @@ public class SudokuPanel extends JPanel {
 
                 int check = sudoku.checkUniqueSolution();
                 if (check == 1) { // unique solution, output the puzzle
-                    return sudoku.complete();
+                    return sudoku.solve();
                 } // else there are multiple solutions, so continue
             }
         }
