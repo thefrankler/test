@@ -1,7 +1,22 @@
 package sudokuSolver;
 
 public class CellSet {
-    private final Cell[] set = new Cell[9];
+    private Cell[] set;
+
+    public CellSet() {
+        set = new Cell[9];
+    }
+
+    public CellSet(int[] array) {
+        if (array.length != 9) {
+            throw new IllegalArgumentException("CellSet input must be exactly 9 elements long");
+        }
+        set = new Cell[9];
+        for (int index = 0; index < 9; index++) {
+            set[index] = new Cell(index, index);
+            set[index].setValue(array[index]);
+        }
+    }
 
     public void addCell(Cell cell, int i) {
         if (i >= 0 && i < 9) {
@@ -22,6 +37,36 @@ public class CellSet {
                 if (set[compareColumn].getValue() == set[previousColumn].getValue()) {
                     return false;
                 }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public String toString()
+    {
+        StringBuilder string = new StringBuilder();
+        for (int index = 0; index < 9; index++) {
+                string.append(this.set[index].getValue()).append("  ");
+        }
+        return string.toString();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+
+        if (!(object instanceof CellSet)) {
+            return false;
+        }
+        CellSet other = (CellSet) object;
+
+
+        for (int index = 0; index < 9; index++) {
+            if (other.getCell(index).getValue() != this.getCell(index).getValue()) {
+                return false;
             }
         }
         return true;

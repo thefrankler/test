@@ -58,37 +58,6 @@ public class SudokuPanel extends JPanel {
         setScreen(new Sudoku());
     }
 
-    public Sudoku randomPuzzle() {
-        Sudoku sudoku = randomSolution();
-        Random rand = new Random();
-
-        //make list of unchecked cells
-        ArrayList<int[]> cells = new ArrayList<>();
-        for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
-            cells.add(new int[] {row,column});
-        }
-
-        long start = System.currentTimeMillis();
-        long finish = start + 30*1000; // 30 seconds * 1000 ms/sec
-        while (System.currentTimeMillis() < finish && cells.size()>0) {
-
-            //randomly select a gridCells to checkButton
-            int index = rand.nextInt(cells.size());
-            int row = cells.get(index)[0];
-            int column = cells.get(index)[1];
-
-            int temp = sudoku.cells[row][column];
-            sudoku.cells[row][column] = 0;
-
-            if (sudoku.checkUniqueSolution() > 1) {
-                sudoku.cells[row][column] = temp;
-            }
-
-            cells.remove(index);
-        }
-        return sudoku;
-    }
-
     public Sudoku readScreen(){
         int[][] sudoku = new int[9][9];
             for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
@@ -107,12 +76,47 @@ public class SudokuPanel extends JPanel {
 
     public void setScreen(Sudoku sudoku){
         for (int row=0; row<9; row++) for(int column=0; column<9; column++){
-            if (sudoku.cells[row][column] == 0) {
+            if (sudoku.getCell(row, column).isEmpty()) {
                 gridCells[row][column].setText("");
             } else {
-                gridCells[row][column].setText(Integer.toString(sudoku.cells[row][column]));
+                gridCells[row][column].setText(Integer.toString(sudoku.getCell(row, column).getValue()));
             }
         }
+    }
+
+    public Sudoku randomPuzzle() {
+        Sudoku sudoku = randomSolution();
+        Random rand = new Random();
+
+        //make list of unchecked cells
+        ArrayList<int[]> cellCoordinateList = new ArrayList<>();
+        for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
+            cellCoordinateList.add(new int[] {row,column});
+        }
+
+        long start = System.currentTimeMillis();
+        long finish = start + 30*1000; // 30 seconds * 1000 ms/sec
+//        while (System.currentTimeMillis() < finish && cellCoordinateList.size()>0) {
+        while ( cellCoordinateList.size()>0) {
+
+            //randomly select a cell to check
+            int index = rand.nextInt(cellCoordinateList.size());
+            int row = cellCoordinateList.get(index)[0];
+            int column = cellCoordinateList.get(index)[1];
+
+            System.out.println(sudoku);
+            int tempValue = sudoku.getCell(row, column).getValue();
+            sudoku.getCell(row, column).clear();
+            System.out.println(sudoku);
+
+            if (sudoku.checkUniqueSolution() > 1) {
+                sudoku.getCell(row, column).setValue(tempValue);
+            }
+            System.out.println(sudoku);
+
+            cellCoordinateList.remove(index);
+        }
+        return sudoku;
     }
 
     public Sudoku randomEasyPuzzle() {
@@ -121,7 +125,7 @@ public class SudokuPanel extends JPanel {
 
         boolean end = true;
         for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
-            if (sudoku.cells[row][column] != 0 && sudoku.cellOptions(row,column).size() == 0) { // if there is a nonempty gridCells with options open
+            if (!sudoku.getCell(row, column).isEmpty() && sudoku.cellOptions(row,column).size() == 0) { // if there is a nonempty gridCells with options open
                 end = false;
             }
         }
@@ -129,17 +133,17 @@ public class SudokuPanel extends JPanel {
         while (!end) {
             //randomly delete unnecessary cells
             int index = rand.nextInt(81);
-            if (sudoku.cells[index / 9][index % 9] != 0) {
+            if (!sudoku.getCell(index / 9, index % 9).isEmpty()) {
                 Vector<Integer> options = sudoku.cellOptions(index / 9, index % 9);
                 int size = options.size();
                 if (size == 0) {
-                    sudoku.cells[index / 9][index % 9] = 0;
+                    sudoku.getCell(index / 9, index % 9).clear();
                 }
             }
 
             end = true;
             for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
-                if (sudoku.cells[row][column] != 0 && sudoku.cellOptions(row,column).size() == 0) {
+                if (!sudoku.getCell(row, column).isEmpty() && sudoku.cellOptions(row,column).size() == 0) {
                     end = false;
                 }
             }
@@ -148,7 +152,7 @@ public class SudokuPanel extends JPanel {
         return sudoku;
     }
 
-    private Sudoku randomSolution() {
+    public Sudoku randomSolution() {
         //create blank sudoku
         Sudoku sudoku = new Sudoku();
         Random rand = new Random();
@@ -158,16 +162,16 @@ public class SudokuPanel extends JPanel {
         while (System.currentTimeMillis() < end) {
             //fill a gridCells randomly
             int cell = rand.nextInt(81);
-            if (sudoku.cells[cell / 9][cell % 9] == 0) {
+            if (sudoku.getCell(cell / 9, cell % 9).isEmpty()) {
                 Vector<Integer> options = sudoku.cellOptions(cell/9,cell%9);
                 int size = options.size();
 
                 if (size == 0) { // no options for gridCells, remove random gridCells
                     int index = rand.nextInt(81);
-                    sudoku.cells[index / 9][index % 9] = 0;
+                    sudoku.getCell(index / 9, index % 9).clear();
                 } else {
                     int digit = rand.nextInt(size);
-                    sudoku.cells[cell / 9][cell % 9] = options.get(digit);
+                    sudoku.getCell(cell / 9, cell % 9).setValue(options.get(digit));
                 }
 
                 int check = sudoku.checkUniqueSolution();
