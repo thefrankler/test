@@ -84,7 +84,7 @@ public class SudokuPanel extends JPanel {
         }
     }
 
-    public Sudoku randomPuzzle() {
+    public Sudoku randomPuzzle() throws Exception {
         Sudoku sudoku = randomSolution();
         Random rand = new Random();
 
@@ -96,23 +96,22 @@ public class SudokuPanel extends JPanel {
 
         long start = System.currentTimeMillis();
         long finish = start + 30*1000; // 30 seconds * 1000 ms/sec
-//        while (System.currentTimeMillis() < finish && cellCoordinateList.size()>0) {
-        while ( cellCoordinateList.size()>0) {
+        while (System.currentTimeMillis() < finish && cellCoordinateList.size()>0) {
 
             //randomly select a cell to check
             int index = rand.nextInt(cellCoordinateList.size());
             int row = cellCoordinateList.get(index)[0];
             int column = cellCoordinateList.get(index)[1];
 
-            System.out.println(sudoku);
             int tempValue = sudoku.getCell(row, column).getValue();
             sudoku.getCell(row, column).clear();
-            System.out.println(sudoku);
 
-            if (sudoku.checkUniqueSolution() > 1) {
+            int solutions = sudoku.checkUniqueSolution();
+            if (solutions > 1) {
                 sudoku.getCell(row, column).setValue(tempValue);
+            } else if (solutions == 0) {
+                throw new Exception("Ross says there are no solutions");
             }
-            System.out.println(sudoku);
 
             cellCoordinateList.remove(index);
         }

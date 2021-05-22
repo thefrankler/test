@@ -105,35 +105,43 @@ public class Sudoku {
 
         if (this.isFull()) {
             if (this.isSolved()) return this;
+            else {
+                JOptionPane.showMessageDialog(new JFrame(),
+                        "There are no solutions.",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+            }
         } else {
-            Sudoku newSudoku = new Sudoku(this.cells);
+
+            Sudoku newSudoku = this.clone();
             options.push(newSudoku);
 
-            while (options.size() > 0 && solutions.size()<2) {
+            while (options.size() > 0) {
                 Sudoku sudoku = options.pop();
-                int numOptions = 0;
-                while (numOptions < 10) {  //checkButton for cells with i options
-                    for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {  // inefficient, could save all values of cellOptions first time around
-                        if (sudoku.getCell(row, column).isEmpty()) {
-                            Vector<Integer> optionsVector = sudoku.cellOptions(row, column);
-                            if (optionsVector.size() == numOptions) {
-                                for (int i = 0; i < numOptions; i++) {
-                                    sudoku.getCell(row, column).setValue(optionsVector.get(i));
-                                    if (sudoku.isSolved()) {
-                                        Sudoku temp = new Sudoku(sudoku.cells);
-                                        solutions.add(temp);
-                                    } else options.push(new Sudoku(sudoku.cells));
-                                }
-                                numOptions=100;
-                            }
+                int bestRow=0, bestCol=0, bestNumOptions = 10;
+                Vector<Integer> bestOptionsVector = new Vector<>();
+                for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
+                    if (sudoku.getCell(row, column).isEmpty()) {
+                        Vector<Integer> optionsVector = sudoku.cellOptions(row, column);
+                        if (optionsVector.size() < bestNumOptions) {
+                            bestRow = row;
+                            bestCol = column;
+                            bestNumOptions = optionsVector.size();
+                            bestOptionsVector = optionsVector;
                         }
                     }
-                    numOptions++;
+                }
+
+                for (int i = 0; i < bestNumOptions; i++) {
+                    sudoku.getCell(bestRow, bestCol).setValue(bestOptionsVector.get(i));
+                    if (sudoku.isSolved()) {
+                        solutions.add(sudoku.clone());
+                    } else options.push(sudoku.clone());
                 }
             }
 
             int solutionsSize = solutions.size();
-//            System.out.println("number of solutions = "+Integer.toString(n));
+//            System.out.println("number of solutions = "+solutionsSize);
             if (solutionsSize>=2) result = 2;
             else if (solutionsSize == 1) result = 1;
             else result = 0;
@@ -169,25 +177,26 @@ public class Sudoku {
 
             while (options.size() > 0) {
                 Sudoku sudoku = options.pop();
-                int numOptions = 1;
-                Main:
-                while (numOptions < 10) {  //checkButton for cells with i options
-                    for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {  // inefficient, could save all values of cellOptions first time around
-                        if (sudoku.getCell(row, column).isEmpty()) {
-                            Vector<Integer> optionsVector = sudoku.cellOptions(row, column);
-                            if (optionsVector.size() == numOptions) {
-                                for (int i = 0; i < numOptions; i++) {
-                                    sudoku.getCell(row, column).setValue(optionsVector.get(i));
-                                    if (sudoku.isSolved()) {
-                                        solutions.add(sudoku.clone());
-                                        if (solutions.size() >=2) return 2; // remove if you want more than 2 solutions.
-                                    } else options.push(sudoku.clone());
-                                }
-                                break Main;
-                            }
+                int bestRow=0, bestCol=0, bestNumOptions = 10;
+                Vector<Integer> bestOptionsVector = new Vector<>();
+                for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
+                    if (sudoku.getCell(row, column).isEmpty()) {
+                        Vector<Integer> optionsVector = sudoku.cellOptions(row, column);
+                        if (optionsVector.size() < bestNumOptions) {
+                            bestRow = row;
+                            bestCol = column;
+                            bestNumOptions = optionsVector.size();
+                            bestOptionsVector = optionsVector;
                         }
                     }
-                    numOptions++;
+                }
+
+                for (int i = 0; i < bestNumOptions; i++) {
+                    sudoku.getCell(bestRow, bestCol).setValue(bestOptionsVector.get(i));
+                    if (sudoku.isSolved()) {
+                        solutions.add(sudoku.clone());
+                        if (solutions.size() >=2) return 2; // remove if you want more than 2 solutions.
+                    } else options.push(sudoku.clone());
                 }
             }
 
@@ -233,12 +242,18 @@ public class Sudoku {
     public String toString()
     {
         StringBuilder string = new StringBuilder();
+        string.append("{");
+        string.append(System.lineSeparator());
         for (int row = 0; row < 9; row++) {
+            string.append("{");
             for (int column = 0; column < 9; column++) {
-                string.append(this.getCell(row, column).getValue()).append("  ");
+                string.append(this.getCell(row, column).getValue()).append(", ");
             }
+            string.append("}");
+            if (row != 8) string.append(",");
             string.append(System.lineSeparator());
         }
+        string.append("}");
         string.append(System.lineSeparator());
         return string.toString();
     }

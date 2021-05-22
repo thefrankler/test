@@ -46,7 +46,12 @@ public class MainPanel extends JPanel implements ActionListener {
                         options,
                         null);
                 if (successPanel == JOptionPane.DEFAULT_OPTION) {
-                    this.sudokuPanel.setScreen(this.sudokuPanel.randomPuzzle());
+                    try {
+                        this.sudokuPanel.setScreen(this.sudokuPanel.randomPuzzle());
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(this,
+                                e);
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(this,
@@ -63,7 +68,12 @@ public class MainPanel extends JPanel implements ActionListener {
             }
 
         } else if (event.getSource() == buttonPanel.nextButton) {
-            this.sudokuPanel.setScreen(this.sudokuPanel.randomPuzzle());
+            try {
+                this.sudokuPanel.setScreen(this.sudokuPanel.randomPuzzle());
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        e);
+            }
         }
 
     }

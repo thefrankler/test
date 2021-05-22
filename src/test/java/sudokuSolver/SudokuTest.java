@@ -7,16 +7,30 @@ import java.util.Vector;
 public class SudokuTest {
     SudokuPanel sudokuPanel = new SudokuPanel();
 
-    int[][] dummy = {{0, 0, 0, 0, 0, 8, 0, 0, 0},
-            {0, 0, 4, 0, 0, 0, 8, 0, 7},
-            {0, 5, 0, 0, 9, 0, 0, 3, 0},
-            {0, 6, 2, 0, 0, 0, 0, 0, 0},
-            {0, 8, 0, 0, 0, 0, 0, 0, 0},
-            {5, 9, 0, 6, 0, 0, 0, 0, 2},
-            {2, 7, 5, 0, 0, 0, 0, 0, 0},
-            {8, 1, 6, 0, 0, 0, 5, 0, 0},
-            {4, 3, 9, 0, 0, 0, 0, 0, 0}};
+    int[][] dummy = {
+            {0, 0, 0, 0, 8, 2, 0, 0, 5},
+            {0, 5, 0, 1, 0, 0, 0, 7, 8},
+            {2, 8, 0, 0, 0, 5, 3, 1, 0},
+            {0, 0, 0, 0, 2, 0, 0, 0, 6},
+            {3, 6, 5, 0, 7, 0, 9, 4, 2},
+            {1, 0, 0, 0, 3, 0, 0, 0, 0},
+            {0, 3, 8, 2, 0, 0, 0, 6, 1},
+            {5, 4, 0, 0, 0, 8, 0, 2, 0},
+            {9, 0, 0, 6, 5, 0, 0, 0, 0}};
     Sudoku dummySudoku = new Sudoku(dummy);
+
+    int[][] dummySolution = {
+            {4, 1, 3, 7, 8, 2, 6, 9, 5, },
+            {6, 5, 9, 1, 4, 3, 2, 7, 8, },
+            {2, 8, 7, 9, 6, 5, 3, 1, 4, },
+            {8, 7, 4, 5, 2, 9, 1, 3, 6, },
+            {3, 6, 5, 8, 7, 1, 9, 4, 2, },
+            {1, 9, 2, 4, 3, 6, 8, 5, 7, },
+            {7, 3, 8, 2, 9, 4, 5, 6, 1, },
+            {5, 4, 6, 3, 1, 8, 7, 2, 9, },
+            {9, 2, 1, 6, 5, 7, 4, 8, 3, }
+        };
+    Sudoku dummySolved = new Sudoku(dummySolution);
 
     int[][] solution = {{7, 8, 4, 3, 9, 2, 6, 5, 1},
             {5, 3, 6, 1, 4, 8, 2, 7, 9},
@@ -57,14 +71,17 @@ public class SudokuTest {
     @Test
     public void testOptions() {
         Vector options = new Vector<Integer>(1);
-        options.add(2);
-        Assertions.assertEquals(options, dummySudoku.cellOptions(1, 1));
+        options.add(3);
+        options.add(4);
+        options.add(6);
+        options.add(9);
+        Assertions.assertEquals(options, dummySudoku.cellOptions(1, 2));
     }
 
     @Test
     public void testSolve() {
-        Sudoku solution = almostSolvedSudoku.clone().solve();
-        Assertions.assertEquals(testSolution, solution);
+        Sudoku solution = dummySudoku.clone().solve();
+        Assertions.assertEquals(dummySolved, solution);
     }
 
     @Test
@@ -90,7 +107,12 @@ public class SudokuTest {
 
     @Test
     public void testRandomPuzzle() {
-        Sudoku sudoku = sudokuPanel.randomPuzzle();
+        Sudoku sudoku = new Sudoku();
+        try {
+            sudoku = sudokuPanel.randomPuzzle();
+        } catch (Exception e) {
+            Assertions.assertTrue(false);
+        }
         System.out.println(sudoku);
         Assertions.assertFalse(sudoku.isFull());
     }
