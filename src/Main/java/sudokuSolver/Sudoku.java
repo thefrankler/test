@@ -171,11 +171,13 @@ public class Sudoku {
                 }
 
                 for (int i = 0; i < bestNumOptions; i++) {
-                    sudoku.getCell(bestRow, bestCol).setValue(bestOptionsVector.get(i));
-                    if (sudoku.isSolved()) {
-                        solutions.add(sudoku.clone());
-                        if (solutions.size() >=2) return solutions; // remove if you want more than 2 solutions.
-                    } else options.push(sudoku.clone());
+                    if (bestOptionsVector.size() > 0) {
+                        sudoku.getCell(bestRow, bestCol).setValue(bestOptionsVector.get(i));
+                        if (sudoku.isSolved()) {
+                            solutions.add(sudoku.clone());
+                            if (solutions.size() >= 2) return solutions; // remove if you want more than 2 solutions.
+                        } else options.push(sudoku.clone());
+                    }
                 }
             }
         }

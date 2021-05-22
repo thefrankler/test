@@ -15,16 +15,23 @@ public class SudokuPanel extends JPanel {
         gridCells = new JTextField[9][9];
         for (int row=0; row<9; row++) for (int column=0; column<9; column++){
             gridCells[row][column] = new JTextField(10);
+
             ((AbstractDocument)gridCells[row][column].getDocument()).setDocumentFilter(new DocumentFilter(){
-                @Override
-                public void replace(FilterBypass fb, int offset, int length, String str, AttributeSet attrs) throws BadLocationException {
-                    String text = fb.getDocument().getText(0, fb.getDocument().getLength());
-                    text += str;
-                    if ((fb.getDocument().getLength() + str.length()
-                            - length) <= 1 && text.matches("^[1-9]{0,1}$")) {
-                        super.replace(fb, offset, length, str, attrs);
-                    }
-                }
+//                public void insertString(FilterBypass fb, int offs, String str, AttributeSet attr) throws BadLocationException {
+//                    String text = fb.getDocument().getText(0, fb.getDocument().getLength());
+//                    text += str;
+//                    if (text.matches("^[1-9]{0,1}$")) {
+//                        fb.insertString(offs, str, attr);
+//                    }
+//                }
+//
+//                public void replace(FilterBypass fb, int offs, int length, String str, AttributeSet attr) throws BadLocationException {
+//                    String text = fb.getDocument().getText(0, fb.getDocument().getLength());
+//                    text += str;
+//                    if (text.matches("^[1-9]{0,1}$")) {
+//                        fb.replace(offs, length, str, attr);
+//                    }
+//                }
             });
 
             gridCells[row][column].setHorizontalAlignment(JTextField.CENTER);
@@ -82,7 +89,7 @@ public class SudokuPanel extends JPanel {
     public void setScreen(Sudoku sudoku){
         for (int row=0; row<9; row++) for(int column=0; column<9; column++){
             if (sudoku.getCell(row, column).isEmpty()) {
-                gridCells[row][column].setText(null);
+                gridCells[row][column].setText("");
             } else {
                 gridCells[row][column].setText(Integer.toString(sudoku.getCell(row, column).getValue()));
             }
