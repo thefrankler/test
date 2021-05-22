@@ -46,13 +46,9 @@ public class MainPanel extends JPanel implements ActionListener {
                         options,
                         null);
                 if (successPanel == JOptionPane.DEFAULT_OPTION) {
-                    try {
-                        this.sudokuPanel.setScreen(this.sudokuPanel.randomPuzzle());
-                    } catch (Exception e) {
-                        JOptionPane.showMessageDialog(this,
-                                e);
-                    }
+                    this.sudokuPanel.setScreen(Sudoku.randomPuzzle());
                 }
+                // TODO other options
             } else {
                 JOptionPane.showMessageDialog(this,
                         "There is a mistake somewhere.");
@@ -68,12 +64,7 @@ public class MainPanel extends JPanel implements ActionListener {
             }
 
         } else if (event.getSource() == buttonPanel.nextButton) {
-            try {
-                this.sudokuPanel.setScreen(this.sudokuPanel.randomPuzzle());
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this,
-                        e);
-            }
+            this.sudokuPanel.setScreen(Sudoku.randomPuzzle());
         }
 
     }

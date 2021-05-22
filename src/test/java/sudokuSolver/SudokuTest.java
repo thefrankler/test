@@ -65,7 +65,7 @@ public class SudokuTest {
     public void testSudokuInit() {
         Sudoku blank = new Sudoku();
         Assertions.assertTrue(blank.getCell(0, 0).isEmpty());
-        Assertions.assertTrue(blank.checkUniqueSolution() > 1);
+        Assertions.assertTrue(blank.getSolutions().size() > 1);
     }
 
     @Test
@@ -86,33 +86,28 @@ public class SudokuTest {
 
     @Test
     public void testBlankSolutions() {
-        int solutions = (new Sudoku()).checkUniqueSolution();
+        int solutions = (new Sudoku()).getSolutions().size();
         Assertions.assertEquals(2, solutions);
     }
 
     @Test
     public void testUniqueSolution() {
         Sudoku clone = almostSolvedSudoku.clone();
-        int solutions = almostSolvedSudoku.checkUniqueSolution();
+        int solutions = almostSolvedSudoku.getSolutions().size();
         Assertions.assertEquals(1, solutions);
         Assertions.assertEquals(clone, almostSolvedSudoku);
     }
 
     @Test
     public void testRandomSolution() {
-        Sudoku solution = sudokuPanel.randomSolution();
+        Sudoku solution = Sudoku.randomSolution();
         Assertions.assertTrue(solution.isSolved());
         Assertions.assertEquals(solution, solution.solve());
     }
 
     @Test
     public void testRandomPuzzle() {
-        Sudoku sudoku = new Sudoku();
-        try {
-            sudoku = sudokuPanel.randomPuzzle();
-        } catch (Exception e) {
-            Assertions.assertTrue(false);
-        }
+        Sudoku sudoku = Sudoku.randomPuzzle();
         System.out.println(sudoku);
         Assertions.assertFalse(sudoku.isFull());
     }

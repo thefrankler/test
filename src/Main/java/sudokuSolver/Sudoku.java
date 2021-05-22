@@ -1,9 +1,7 @@
 package sudokuSolver;
 
 import javax.swing.*;
-import java.util.HashSet;
-import java.util.Stack;
-import java.util.Vector;
+import java.util.*;
 
 public class Sudoku {
 
@@ -23,10 +21,6 @@ public class Sudoku {
                 cells[row][column] = new Cell(row, column).setValue(puzzle[row][column]);
             }
         }
-    }
-
-    public Sudoku(Cell[][] cells) {
-        this.cells = cells;
     }
 
     public Sudoku clone() {
@@ -98,118 +92,10 @@ public class Sudoku {
         return true;
     }
 
-    public Sudoku solve() {
-        Stack<Sudoku> options = new Stack<>();
-        HashSet<Sudoku> solutions = new HashSet<>();
-        int result;
-
-        if (this.isFull()) {
-            if (this.isSolved()) return this;
-            else {
-                JOptionPane.showMessageDialog(new JFrame(),
-                        "There are no solutions.",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-            }
-        } else {
-
-            Sudoku newSudoku = this.clone();
-            options.push(newSudoku);
-
-            while (options.size() > 0) {
-                Sudoku sudoku = options.pop();
-                int bestRow=0, bestCol=0, bestNumOptions = 10;
-                Vector<Integer> bestOptionsVector = new Vector<>();
-                for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
-                    if (sudoku.getCell(row, column).isEmpty()) {
-                        Vector<Integer> optionsVector = sudoku.cellOptions(row, column);
-                        if (optionsVector.size() < bestNumOptions) {
-                            bestRow = row;
-                            bestCol = column;
-                            bestNumOptions = optionsVector.size();
-                            bestOptionsVector = optionsVector;
-                        }
-                    }
-                }
-
-                for (int i = 0; i < bestNumOptions; i++) {
-                    sudoku.getCell(bestRow, bestCol).setValue(bestOptionsVector.get(i));
-                    if (sudoku.isSolved()) {
-                        solutions.add(sudoku.clone());
-                    } else options.push(sudoku.clone());
-                }
-            }
-
-            int solutionsSize = solutions.size();
-//            System.out.println("number of solutions = "+solutionsSize);
-            if (solutionsSize>=2) result = 2;
-            else if (solutionsSize == 1) result = 1;
-            else result = 0;
-
-            if (result==0) {
-                JOptionPane.showMessageDialog(new JFrame(),
-                        "There are no solutions.",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-            } else if (result>1) {
-                JOptionPane.showMessageDialog(new JFrame(),
-                        "There is more than one solution.",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-            } else { // result == 1
-                return solutions.iterator().next();
-            }
-        }
-        return null;
-    }
-
-    public int checkUniqueSolution() //0 = no solutions, 1 = 1 solution, 2 = more solutions
-    {
-        Stack<Sudoku> options = new Stack<>();
-        HashSet<Sudoku> solutions = new HashSet<>();
-
-        if (this.isFull()) {
-            if (this.isSolved()) return 1;
-            else return 0;
-        } else {
-            Sudoku newSudoku = this.clone();
-            options.push(newSudoku);
-
-            while (options.size() > 0) {
-                Sudoku sudoku = options.pop();
-                int bestRow=0, bestCol=0, bestNumOptions = 10;
-                Vector<Integer> bestOptionsVector = new Vector<>();
-                for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
-                    if (sudoku.getCell(row, column).isEmpty()) {
-                        Vector<Integer> optionsVector = sudoku.cellOptions(row, column);
-                        if (optionsVector.size() < bestNumOptions) {
-                            bestRow = row;
-                            bestCol = column;
-                            bestNumOptions = optionsVector.size();
-                            bestOptionsVector = optionsVector;
-                        }
-                    }
-                }
-
-                for (int i = 0; i < bestNumOptions; i++) {
-                    sudoku.getCell(bestRow, bestCol).setValue(bestOptionsVector.get(i));
-                    if (sudoku.isSolved()) {
-                        solutions.add(sudoku.clone());
-                        if (solutions.size() >=2) return 2; // remove if you want more than 2 solutions.
-                    } else options.push(sudoku.clone());
-                }
-            }
-
-            int numSolutions = solutions.size();
-//            System.out.println("number of solutions = "+Integer.toString(n));
-            if (numSolutions>2) numSolutions = 2;
-            return numSolutions;
-        }
-    }
-
     public Vector<Integer> cellOptions(int rowIndex, int columnIndex) {
         int[] isDigitForbidden = new int[9];
         Vector<Integer> options = new Vector<>();
+        Cell cell = this.getCell(rowIndex, columnIndex);
 
         //checkButton row
         CellSet row = getRow(rowIndex);
@@ -235,7 +121,139 @@ public class Sudoku {
                 }
             }
         }
+        cell.setOptions(options);
         return options;
+    }
+
+    public Sudoku solve() {
+        HashSet<Sudoku> solutions = getSolutions();
+        if (solutions.size() == 0) {
+            JOptionPane.showMessageDialog(new JFrame(),
+                    "There are no solutions.",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+        } else if (solutions.size() > 1) {
+            JOptionPane.showMessageDialog(new JFrame(),
+                    "There is more than one solution.",
+                    "Warning",
+                    JOptionPane.WARNING_MESSAGE);
+        } else {
+            return solutions.iterator().next();
+        }
+        return null;
+    }
+
+    public HashSet<Sudoku> getSolutions() {
+        Stack<Sudoku> options = new Stack<>();
+        HashSet<Sudoku> solutions = new HashSet<>();
+
+        if (this.isFull()) {
+            if (this.isSolved()) {
+                solutions.add(this.clone());
+            }
+        } else {
+            options.push(this.clone());
+
+            while (options.size() > 0) {
+                Sudoku sudoku = options.pop();
+                int bestRow=0, bestCol=0, bestNumOptions = 10;
+                Vector<Integer> bestOptionsVector = new Vector<>();
+                for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
+                    if (sudoku.getCell(row, column).isEmpty()) {
+                        Vector<Integer> optionsVector = sudoku.cellOptions(row, column);
+                        if (optionsVector.size() < bestNumOptions) {
+                            bestRow = row;
+                            bestCol = column;
+                            bestNumOptions = optionsVector.size();
+                            bestOptionsVector = optionsVector;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < bestNumOptions; i++) {
+                    sudoku.getCell(bestRow, bestCol).setValue(bestOptionsVector.get(i));
+                    if (sudoku.isSolved()) {
+                        solutions.add(sudoku.clone());
+                        if (solutions.size() >=2) return solutions; // remove if you want more than 2 solutions.
+                    } else options.push(sudoku.clone());
+                }
+            }
+        }
+        return solutions;
+    }
+
+    public Sudoku minimize() throws Exception {
+        Sudoku sudoku = this.clone();
+        Random rand = new Random();
+
+        //make list of unchecked cells
+        ArrayList<int[]> cellCoordinateList = new ArrayList<>();
+        for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
+            cellCoordinateList.add(new int[] {row,column});
+        }
+
+        long start = System.currentTimeMillis();
+        long finish = start + 30*1000; // 30 seconds * 1000 ms/sec
+        while (System.currentTimeMillis() < finish && cellCoordinateList.size()>0) {
+
+            //randomly select a cell to check
+            int index = rand.nextInt(cellCoordinateList.size());
+            int row = cellCoordinateList.get(index)[0];
+            int column = cellCoordinateList.get(index)[1];
+
+            int tempValue = sudoku.getCell(row, column).getValue();
+            sudoku.getCell(row, column).clear();
+
+            int numSolutions = sudoku.getSolutions().size();
+            if (numSolutions > 1) {
+                sudoku.getCell(row, column).setValue(tempValue);
+            } else if (numSolutions == 0) {
+                throw new Exception("There are no solutions");
+            }
+
+            cellCoordinateList.remove(index);
+        }
+        return sudoku;
+    }
+
+    public static Sudoku randomSolution() {
+        Sudoku sudoku = new Sudoku();
+        Random rand = new Random();
+        long start = System.currentTimeMillis();
+        long end = start + 10*1000; // 10 seconds * 1000 ms/sec
+
+        while (System.currentTimeMillis() < end) {
+            //fill a gridCells randomly
+            int cell = rand.nextInt(81);
+            if (sudoku.getCell(cell / 9, cell % 9).isEmpty()) {
+                Vector<Integer> options = sudoku.cellOptions(cell/9,cell%9);
+                int size = options.size();
+
+                if (size == 0) { // no options for gridCells, remove random gridCells
+                    int index = rand.nextInt(81);
+                    sudoku.getCell(index / 9, index % 9).clear();
+                } else {
+                    int digit = rand.nextInt(size);
+                    sudoku.getCell(cell / 9, cell % 9).setValue(options.get(digit));
+                }
+
+                if (sudoku.getSolutions().size() == 1) { // unique solution, output the puzzle
+                    return sudoku.solve();
+                } // else there are multiple solutions, so continue
+            }
+        }
+        return new Sudoku();
+    }
+
+    public static Sudoku randomPuzzle() {
+        try {
+            Sudoku sudoku = randomSolution();
+            return sudoku.minimize();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(new JFrame(),
+                    e);
+            return null;
+        }
     }
 
     @Override

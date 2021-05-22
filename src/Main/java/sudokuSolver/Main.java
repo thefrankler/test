@@ -12,8 +12,6 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        Font cellFont = new Font("SansSerif", Font.BOLD, 20);
-        UIManager.put("TextField.font", cellFont);
         Font buttonFont = new Font("SansSerif", Font.PLAIN, 16);
         UIManager.put("Button.font", buttonFont);
 

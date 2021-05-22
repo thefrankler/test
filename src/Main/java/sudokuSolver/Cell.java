@@ -1,9 +1,12 @@
 package sudokuSolver;
 
+import java.util.Vector;
+
 public class Cell {
     private final int row;
     private final int column;
     private int value;
+    private Vector<Integer> options;
 
     public Cell(int row, int column) {
         if (row >= 0 && row < 9) {
@@ -43,11 +46,12 @@ public class Cell {
         return value;
     }
 
-    public int getRow() {
-        return row;
+    public Cell setOptions(Vector<Integer> options) {
+        this.options = options;
+        return this;
     }
 
-    public int getColumn() {
-        return column;
+    public Vector<Integer> getOptions() {
+        return options;
     }
 }
