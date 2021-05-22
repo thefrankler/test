@@ -31,12 +31,22 @@ public class CellSet {
     }
 
     public boolean isSolved() {
+        if (!isFull()) { return false;}
         // If any 2 Cells in a CellSet are equal, then it is not solved
         for (int compareColumn = 1; compareColumn < 9; compareColumn++) {
             for (int previousColumn = 0; previousColumn < compareColumn; previousColumn++) {
                 if (set[compareColumn].getValue() == set[previousColumn].getValue()) {
                     return false;
                 }
+            }
+        }
+        return true;
+    }
+
+    public boolean isFull() {
+        for (int index = 1; index < 9; index++) {
+            if (set[index].isEmpty()) {
+                return false;
             }
         }
         return true;

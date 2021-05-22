@@ -157,7 +157,8 @@ public class SudokuPanel extends JPanel {
         Sudoku sudoku = new Sudoku();
         Random rand = new Random();
         long start = System.currentTimeMillis();
-        long end = start + 10*1000; // 10 seconds * 1000 ms/sec
+//        long end = start + 10*1000; // 10 seconds * 1000 ms/sec
+        long end = start + 1000*1000; // 10 seconds * 1000 ms/sec
 
         while (System.currentTimeMillis() < end) {
             //fill a gridCells randomly

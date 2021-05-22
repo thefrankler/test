@@ -11,7 +11,7 @@ public class Sudoku {
 
     public Sudoku() {
         for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
-            cells[row][column] = new Cell(row,column);;
+            cells[row][column] = new Cell(row,column);
         }
     }
 
@@ -68,14 +68,14 @@ public class Sudoku {
         }
 
         CellSet box = new CellSet();
-        for (int index = 0; index < 9; index++) {
-            box.addCell( cells[index/3 + 3 * boxRow][index%3 + 3 * boxColumn], index);
+        for (int i = 0; i < 3; i++) for (int j = 0; j < 3; j++) {
+            box.addCell( cells[i + 3 * boxRow][j + 3 * boxColumn], 3*i+j);
         }
         return box;
     }
 
     public boolean isFull() {
-        for (int row = 0; row < 9; row++) for (int column = 1; column < 9; column++) {
+        for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
             if (cells[row][column].isEmpty()) { return false; }
         }
         return true;
@@ -156,7 +156,8 @@ public class Sudoku {
     }
 
     public int checkUniqueSolution() //0 = no solutions, 1 = 1 solution, 2 = more solutions
-    {   Stack<Sudoku> options = new Stack<>();
+    {
+        Stack<Sudoku> options = new Stack<>();
         HashSet<Sudoku> solutions = new HashSet<>();
 
         if (this.isFull()) {
@@ -238,6 +239,7 @@ public class Sudoku {
             }
             string.append(System.lineSeparator());
         }
+        string.append(System.lineSeparator());
         return string.toString();
     }
 

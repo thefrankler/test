@@ -29,9 +29,10 @@ public class SudokuTest {
             {9, 1, 7, 4, 5, 3, 8, 6, 2}};
     Sudoku testSolution = new Sudoku(solution);
 
-    int[][] almostSolved = {{7, 8, 4, 3, 9, 2, 6, 0, 1},
-            {5, 3, 6, 1, 4, 8, 2, 7, 9},
-            {1, 2, 9, 7, 6, 5, 3, 8, 4},
+    int[][] almostSolved = {
+            {7, 8, 4, 3, 9, 2, 0, 0, 0},
+            {5, 3, 6, 1, 4, 8, 0, 0, 0},
+            {1, 2, 9, 7, 6, 5, 0, 0, 0},
             {2, 4, 3, 8, 1, 6, 7, 9, 5},
             {6, 9, 1, 5, 2, 7, 4, 3, 8},
             {8, 7, 5, 9, 3, 4, 1, 2, 6},
@@ -64,6 +65,12 @@ public class SudokuTest {
     public void testSolve() {
         Sudoku solution = almostSolvedSudoku.clone().solve();
         Assertions.assertEquals(testSolution, solution);
+    }
+
+    @Test
+    public void testBlankSolutions() {
+        int solutions = (new Sudoku()).checkUniqueSolution();
+        Assertions.assertEquals(2, solutions);
     }
 
     @Test
