@@ -259,8 +259,7 @@ public class Sudoku {
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         StringBuilder string = new StringBuilder();
         string.append("{");
         string.append(System.lineSeparator());
