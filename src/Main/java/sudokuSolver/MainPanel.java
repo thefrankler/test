@@ -58,9 +58,9 @@ public class MainPanel extends JPanel implements ActionListener {
         } else if (event.getSource() == buttonPanel.solveButton) {
             sudoku = sudokuPanel.readScreen();
 
-            if(sudoku.solve() != null) {
-                sudoku = sudoku.solve();
-                this.sudokuPanel.setScreen(sudoku);
+            Sudoku solution = sudoku.solve();
+            if(solution != null) {
+                this.sudokuPanel.setScreen(solution);
             }
 
         } else if (event.getSource() == buttonPanel.nextButton) {

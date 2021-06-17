@@ -1,3 +1,10 @@
+Definitons:
+Neighbours of a cell are all cells that share a cellset with it.
+The intersection of 2 cells are the cells that are neighbours to both.
+A link for n is when n can only be in 2 cells in a cellset.
+2 cells are doubly linked if they are chained by 2 numbers.
+
+
 Easy
 
 1. Naked single 8 -         There is only 1 option for a number in a particular cell. (look at row, column and box)
@@ -18,7 +25,7 @@ Medium
 
 Hard
 
-11. Chained pairs 150 -     If there are some cells making a chain of double linked pairs using the same 2 numbers, then the intersection of the endpoints of the chain cannot have either of the options.
+11. Chained pairs (remote pair) 150 -     If there are some cells making a chain of double linked pairs using the same 2 numbers, then the intersection of the endpoints of the chain cannot have either of the options.
 
 12. Swordfish 75 -          Similar to X-wing, but any loop, not just a rectangle. All columns with only 2 options for a number - all corresponding rows must have the number in one of the columns.
 13. Forcing chain -         Find all cells with only 2 options. Pick one of these cells, choose an option for it, then fill in the other cells accordingly, keeping track of the result. Then choose the other option, and see if the result is the same for any cells.
@@ -44,9 +51,4 @@ Possible additions:
 Finned X-wing http://www.sudokusnake.com/finnedxwings.php
 Finned swordfish
 wxyz-wings
-
-Definitons:
-Neighbours of a cell are all cells that share a cellset with it.
-The intersection of 2 cells are the cells that are neighbours to both.
-A link for n is when n can only be in 2 cells in a cellset.
-2 cells are doubly linked if they are chained by 2 numbers.
+Anything from the second row of advanced onwards.

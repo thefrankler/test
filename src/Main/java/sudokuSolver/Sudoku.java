@@ -6,6 +6,7 @@ import java.util.*;
 public class Sudoku {
 
     private Cell[][] cells = new Cell[9][9];
+    public Sudoku solution;
 
     public Sudoku() {
         for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
@@ -30,6 +31,7 @@ public class Sudoku {
                 newSudoku.getCell(row, column).setValue(this.getCell(row, column).getValue());
             }
         }
+        newSudoku.solution = this.solution;
         return newSudoku;
     }
 
@@ -92,6 +94,15 @@ public class Sudoku {
         return true;
     }
 
+    public boolean checkAgainstSolution() {
+        for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
+            if (cells[row][column] != solution.getCell(row, column) && !cells[row][column].isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public Vector<Integer> cellOptions(int rowIndex, int columnIndex) {
         int[] isDigitForbidden = new int[9];
         Vector<Integer> options = new Vector<>();
@@ -126,19 +137,30 @@ public class Sudoku {
     }
 
     public Sudoku solve() {
-        HashSet<Sudoku> solutions = getSolutions();
-        if (solutions.size() == 0) {
-            JOptionPane.showMessageDialog(new JFrame(),
+        if (solution != null) {
+            if (checkAgainstSolution()) {
+                return solution;
+            } else {
+                JOptionPane.showMessageDialog(new JFrame(),
                     "There are no solutions.",
                     "Warning",
                     JOptionPane.WARNING_MESSAGE);
-        } else if (solutions.size() > 1) {
-            JOptionPane.showMessageDialog(new JFrame(),
-                    "There is more than one solution.",
-                    "Warning",
-                    JOptionPane.WARNING_MESSAGE);
+            }
         } else {
-            return solutions.iterator().next();
+            HashSet<Sudoku> solutions = getSolutions();
+            if (solutions.size() == 0) {
+                JOptionPane.showMessageDialog(new JFrame(),
+                        "There are no solutions.",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+            } else if (solutions.size() > 1) {
+                JOptionPane.showMessageDialog(new JFrame(),
+                        "There is more than one solution.",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
+            } else {
+                return solutions.iterator().next();
+            }
         }
         return null;
     }
@@ -147,9 +169,15 @@ public class Sudoku {
         Stack<Sudoku> options = new Stack<>();
         HashSet<Sudoku> solutions = new HashSet<>();
 
+        if (solution != null) {
+            solutions.add(solution.clone());
+            return solutions;
+        }
+
         if (this.isFull()) {
             if (this.isSolved()) {
-                solutions.add(this.clone());
+                solution = this.clone();
+                solutions.add(solution);
             }
         } else {
             options.push(this.clone());
@@ -181,6 +209,9 @@ public class Sudoku {
                 }
             }
         }
+        if (solutions.size() == 1) {
+            solution = solutions.iterator().next();
+        }
         return solutions;
     }
 
@@ -203,12 +234,13 @@ public class Sudoku {
             int row = cellCoordinateList.get(index)[0];
             int column = cellCoordinateList.get(index)[1];
 
-            int tempValue = sudoku.getCell(row, column).getValue();
-            sudoku.getCell(row, column).clear();
+            Sudoku newSudoku = sudoku.clone();
+            newSudoku.getCell(row, column).clear();
+            newSudoku.solution = null;
 
-            int numSolutions = sudoku.getSolutions().size();
-            if (numSolutions > 1) {
-                sudoku.getCell(row, column).setValue(tempValue);
+            int numSolutions = newSudoku.getSolutions().size();
+            if (newSudoku.solution != null) {
+                sudoku = newSudoku;
             } else if (numSolutions == 0) {
                 throw new Exception("There are no solutions");
             }
@@ -239,8 +271,9 @@ public class Sudoku {
                     sudoku.getCell(cell / 9, cell % 9).setValue(options.get(digit));
                 }
 
-                if (sudoku.getSolutions().size() == 1) { // unique solution, output the puzzle
-                    return sudoku.solve();
+                sudoku.getSolutions();
+                if (sudoku.solution != null) { // unique solution, output the puzzle
+                    return sudoku.solution;
                 } // else there are multiple solutions, so continue
             }
         }
