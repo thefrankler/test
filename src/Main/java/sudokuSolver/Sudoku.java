@@ -257,13 +257,13 @@ public class Sudoku {
         long end = start + 10*1000; // 10 seconds * 1000 ms/sec
 
         while (System.currentTimeMillis() < end) {
-            //fill a gridCells randomly
+            //fill a cell randomly
             int cell = rand.nextInt(81);
             if (sudoku.getCell(cell / 9, cell % 9).isEmpty()) {
                 Vector<Integer> options = sudoku.cellOptions(cell/9,cell%9);
                 int size = options.size();
 
-                if (size == 0) { // no options for gridCells, remove random gridCells
+                if (size == 0) { // no options for cell, remove random cell
                     int index = rand.nextInt(81);
                     sudoku.getCell(index / 9, index % 9).clear();
                 } else {

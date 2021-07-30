@@ -1,9 +1,13 @@
+from random import randint
+from datetime import datetime, timedelta
+
 class Sudoku:
     def __init__(self, *args, **kwds):
         if len(args) == 1:
             self.s = args[0]
         else:
             self.s = [[0] * 9] * 9
+        self.solution = None
         
     def __str__(self):
         string = ""
@@ -13,6 +17,19 @@ class Sudoku:
             string += "\n"
         return string
 
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self.s == other.s
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+    
+    def __hash__(self):
+        return hash(repr(self.s))
+    
+    
     
     def getRow(self, r):
         row = []
@@ -34,19 +51,20 @@ class Sudoku:
         return box
 
     
-    def checkFull(self):
+    
+    def isFull(self):
         for r in range(9):
             for c in range(9):
                 if self.s[r][c] == 0:
-                    return false
-        return true
+                    return False
+        return True
 
-    def checkSolution(self):
+    def isSolved(self):
         # check complete
         for r in range(9):
             for c in range(9):
                 if self.s[r][c] == 0:
-                    return false
+                    return False
 
         # check rows
         for r in range(9):
@@ -54,7 +72,7 @@ class Sudoku:
             for c in range(9):
                 for d in range(c):
                     if row[c] == row[d]:
-                        return false
+                        return False
 
         # check columns
         for c in range(9):
@@ -62,7 +80,7 @@ class Sudoku:
             for r in range(9):
                 for d in range(r):
                     if column[r] == column[d]:
-                        return false
+                        return False
 
         # check boxes
         for r in range(3):
@@ -71,14 +89,14 @@ class Sudoku:
                 for f in range(1, 9):
                     for d in range(f):
                         if box[f] == box[d]:
-                            return false
+                            return False
                         
-        return true
+        return True
     
     
     def cellOptions(self, r, c):
-        newList = []
-        options = [];
+        newList = [0] * 9
+        options = []
 
         # check row
         row = self.getRow(r)
@@ -101,109 +119,129 @@ class Sudoku:
         # check list
         for i in range(9):
             if newList[i] == 0:
-                if not options.contains(i+1):
+                if not i+1 in options:
                     options.append(i + 1)
                     
         return options
-    
-    def complete(self):
-        options = [];
-        solutions = [];
 
-        if self.checkFull():
-            if self.checkSolution():
-                return self
-        else:
-            news = Sudoku(self.s)
-            options.append(news)
-
-
-            while len(options) > 0 and len(solutions) < 2:
-                sud = options.pop()
-                i = 0
-                while i < 10:  # check for cells with i options
-                    for r in range(9):
-                        for c in range(9):
-                            if sud.s[r][c] == 0:
-                                v = sud.cellOptions(r, c)
-                                if len(v) == i:
-                                    for j in range(i):
-                                        sud.s[r][c] = v[j]
-                                        if sud.checkSolution():
-                                            temp = Sudoku(sud.s)
-                                            solutions.append(temp)
-                                        else:
-                                            options.append(Sudoku(sud.s))
-                                    i=100
-                    i += 1
-
-            m = len(solutions)
-            if m >= 2:
-                n = 2
-            elif m == 1:
-                n = 1
-            else:
-                n = 0
-
-            if n==0:
-                print('no solutions to ' + str(self))
-            elif n>1:
-                print('multiple solutions to ' + str(self))
-            else: # n == 1
-                return solutions.pop()
-
-    def checkUniqueSolution(self): # 0 = no solutions, 1 = 1 solution, 2 = more solutions
+    def getSolutions(self):
         options = []
-        solutions = []
+        solutions = set()
 
-        if self.checkFull():
-            if self.checkSolution(): 
-                return 1
-            else:
-                return 0
+        if self.solution is not None:
+            solutions.add(Sudoku(self.solution.s.copy()))
+            return solutions
+
+        if self.isFull():
+            if self.isSolved():
+                self.solution = Sudoku(self.s.copy())
+                solutions.add(self.solution)
         else:
-            news = Sudoku(self.s)
-            options.append(news)
+            options.append(Sudoku(self.s.copy()))
 
-            while options.size() > 0:
-                sud = options.pop()
-                bestRow=0
-                bestCol=0
+            while len(options) > 0:
+                sudoku = options.pop()
+                bestRow = 0
+                bestCol = 0
                 bestNumOptions = 10
-                bestOptions = []
-                for r in range(9):
-                    for c in range(9):
-                        if sud.s[r][c] == 0:
-                            optionsList = sud.cellOptions(r, c)
-                            if len(optionsList) < bestNumOptions:
-                                bestRow = r
-                                bestCol = c
-                                bestNumOptions = len(optionsList)
-                                bestOptions = optionsList;
+                bestOptionsVector = []
+                for row in range(9):
+                    for column in range(9):
+                        if sudoku.s[row][column] == 0:
+                            optionsVector = sudoku.cellOptions(row, column)
+                            if len(optionsVector) < bestNumOptions:
+                                bestRow = row
+                                bestCol = column
+                                bestNumOptions = len(optionsVector)
+                                bestOptionsVector = optionsVector
 
                 for i in range(bestNumOptions):
                     if len(bestOptionsVector) > 0:
-                        sud.s[bestRow][bestCol] = bestOptionsVector[i]
-                        if sud.checkSolution():
-                            solutions.append(sud)
+                        sudoku.s[bestRow][bestCol] = bestOptionsVector[i]
+                        if sudoku.isSolved():
+                            solutions.add(Sudoku(self.s.copy()))
                             if len(solutions) >= 2:
-                                return 2
+                                return solutions; # remove if you want more than 2 solutions.
                         else:
-                            options.append(sud)
-            
-            return len(solutions)
+                            options.append(Sudoku(self.s.copy()))
+                            
+        if len(solutions) == 1:
+            self.solution = solutions.pop()
+        return solutions
+    
+    def solve(self):
+        if not self.solution is None:
+            if self == self.solution:
+                return self.solution
+            else:
+                raise Exception("There are no solutions")
+        else:
+            solutions = self.getSolutions()
+            if len(solutions) == 0:
+                raise Exception("There are no solutions")
+            elif len(solutions) > 1:
+                raise Exception("There is more than 1 solution")
+            else:
+                return solutions.pop()
+    
         
-s = Sudoku([
-    [1, 2, 3, 4, 5, 6, 7, 8, 9],
-    [2, 2, 3, 4, 5, 6, 7, 8, 9],
-    [3, 2, 3, 4, 5, 6, 7, 8, 9],
-    [4, 2, 3, 1, 5, 6, 2, 8, 9],
-    [5, 2, 3, 4, 5, 6, 7, 8, 9],
-    [6, 2, 3, 4, 5, 6, 7, 8, 9],
-    [7, 2, 3, 3, 5, 6, 4, 8, 9],
-    [8, 2, 3, 4, 5, 6, 7, 8, 9],
-    [9, 2, 3, 4, 5, 6, 7, 8, 9]
-])
-print(s.getRow(2))
-print(s.getColumn(2))
-print(s.getBox(2, 1))
+    
+    def minimize(self):
+        sudoku = self
+        rand = randint(0, len(cellCoordinateList))
+
+        # make list of unchecked cells
+        cellCoordinateList = []
+        for row in range(9):
+            for column in range(9):
+                cellCoordinateList.append((row,column))
+
+        start = datetime.now()
+        finish = start + timedelta(0, 30)  # plus 30 seconds
+        while datetime.now() < finish and len(cellCoordinateList) > 0:
+            # randomly select a cell to check
+            index = randint(0, len(cellCoordinateList))
+            row = cellCoordinateList[index][0]
+            column = cellCoordinateList[index][1]
+
+            newSudoku = Sudoku(sudoku.s.copy())
+            newSudoku.s[row][column] = 0
+
+            numSolutions = newSudoku.checkUniqueSolution()
+            if numSolutions == 1:
+                sudoku = newSudoku
+            elif numSolutions == 0:
+                raise Exception("There are no solutions")
+
+            cellCoordinateList.pop(index)
+        return sudoku
+
+    @staticmethod
+    def randomSolution():
+        sudoku = Sudoku()
+        start = datetime.now()
+        end = start + timedelta(0, 10)
+
+        while datetime.now() < end:
+            # fill a cell randomly
+            cell = randint(0, 81)
+            if sudoku.s[cell // 9][cell % 9] == 0:
+                options = sudoku.cellOptions(cell // 9, cell % 9)
+                size = len(options)
+
+                if size == 0: # no options for cell, remove random cell
+                    index = randint(0, 81)
+                    sudoku.s[index // 9][index % 9] = 0
+                else:
+                    digit = randint(0, size)
+                    sudoku.s[cell // 9][cell % 9] = options[digit]
+
+                try:
+                    return sudoku.complete
+                except Exception as e:
+                    pass
+
+    @staticmethod
+    def randomPuzzle():
+        sudoku = Sudoku.randomSolution()
+        return sudoku.minimize()
