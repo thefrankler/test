@@ -155,8 +155,8 @@ class Sudoku:
                                 bestNumOptions = len(optionsVector)
                                 bestOptionsVector = optionsVector
 
-                for i in range(bestNumOptions):
-                    if len(bestOptionsVector) > 0:
+                if (bestNumOptions < 10):
+                    for i in range(bestNumOptions):
                         sudoku.s[bestRow][bestCol] = bestOptionsVector[i]
                         if sudoku.isSolved():
                             solutions.add(Sudoku(self.s.copy()))
@@ -164,9 +164,9 @@ class Sudoku:
                                 return solutions; # remove if you want more than 2 solutions.
                         else:
                             options.append(Sudoku(self.s.copy()))
-                            
+                        
         if len(solutions) == 1:
-            self.solution = solutions.pop()
+            self.solution = next(iter(solutions))
         return solutions
     
     def solve(self):
@@ -188,7 +188,7 @@ class Sudoku:
     
     def minimize(self):
         sudoku = self
-        rand = randint(0, len(cellCoordinateList))
+        rand = randint(0, len(cellCoordinateList)-1)
 
         # make list of unchecked cells
         cellCoordinateList = []
@@ -200,7 +200,7 @@ class Sudoku:
         finish = start + timedelta(0, 30)  # plus 30 seconds
         while datetime.now() < finish and len(cellCoordinateList) > 0:
             # randomly select a cell to check
-            index = randint(0, len(cellCoordinateList))
+            index = randint(0, len(cellCoordinateList)-1)
             row = cellCoordinateList[index][0]
             column = cellCoordinateList[index][1]
 
@@ -218,23 +218,30 @@ class Sudoku:
 
     @staticmethod
     def randomSolution():
-        sudoku = Sudoku()
         start = datetime.now()
-        end = start + timedelta(0, 10)
+        end = start + timedelta(0, 30)
+        
+        sudoku = Sudoku()
+        emptyCells = list(range(81))
+        filledCells = []
 
         while datetime.now() < end:
             # fill a cell randomly
-            cell = randint(0, 81)
+            cell = emptyCells[ randint(0, len(emptyCells)-1) ]
             if sudoku.s[cell // 9][cell % 9] == 0:
                 options = sudoku.cellOptions(cell // 9, cell % 9)
                 size = len(options)
 
                 if size == 0: # no options for cell, remove random cell
-                    index = randint(0, 81)
-                    sudoku.s[index // 9][index % 9] = 0
+                    digit = filledCells[ randint(0, len(filledCells)-1) ]
+                    sudoku.s[digit // 9][digit % 9] = 0
+                    emptyCells.append(digit)
+                    filledCells.remove(digit)
                 else:
-                    digit = randint(0, size)
-                    sudoku.s[cell // 9][cell % 9] = options[digit]
+                    digit = options[ randint(0, size-1) ]
+                    sudoku.s[cell // 9][cell % 9] = digit
+                    emptyCells.remove(digit)
+                    filledCells.append(digit)
 
                 try:
                     return sudoku.complete
