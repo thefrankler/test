@@ -2,11 +2,12 @@ package sudokuSolver;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import sudokuSolver.Models.*;
+import sudokuSolver.Panels.MainPanel;
+
 import java.util.Vector;
 
 public class SudokuTest {
-    SudokuPanel sudokuPanel = new SudokuPanel();
-
     int[][] dummy = {
             {0, 0, 0, 0, 8, 2, 0, 0, 5},
             {0, 5, 0, 1, 0, 0, 0, 7, 8},
@@ -79,8 +80,8 @@ public class SudokuTest {
     }
 
     @Test
-    public void testSolve() {
-        Sudoku solution = dummySudoku.clone().solve();
+    public void testSolve() throws NoSolutionsException, MultipleSolutionsException {
+        Sudoku solution = dummySudoku.clone().getSolution();
         Assertions.assertEquals(dummySolved, solution);
     }
 
@@ -99,15 +100,13 @@ public class SudokuTest {
     }
 
     @Test
-    public void testRandomSolution() {
-        Sudoku solution = Sudoku.randomSolution();
-        Assertions.assertTrue(solution.isSolved());
-        Assertions.assertEquals(solution, solution.solve());
+    public void testEasyPuzzle() {
+        Assertions.assertEquals(almostSolvedSudoku.getDifficulty(), Difficulty.EASY);
     }
 
     @Test
     public void testRandomPuzzle() {
-        Sudoku sudoku = Sudoku.randomPuzzle();
+        Sudoku sudoku = MainPanel.randomPuzzle(Difficulty.EASY);
         System.out.println(sudoku);
         Assertions.assertFalse(sudoku.isFull());
     }

@@ -1,4 +1,4 @@
-package sudokuSolver;
+package sudokuSolver.Models;
 
 import java.util.Vector;
 

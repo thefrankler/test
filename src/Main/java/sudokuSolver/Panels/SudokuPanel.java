@@ -1,8 +1,12 @@
-package sudokuSolver;
+package sudokuSolver.Panels;
+
+import sudokuSolver.Models.Difficulty;
+import sudokuSolver.Models.Sudoku;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
+import java.util.HashSet;
 
 public class SudokuPanel extends JPanel {
     public JTextField[][] gridCells;
@@ -71,7 +75,7 @@ public class SudokuPanel extends JPanel {
             add(gridCells[row][column]);
         }
 
-        this.setScreen(Sudoku.randomPuzzle());
+        this.setScreen(MainPanel.randomPuzzle(Difficulty.EASY) );
     }
 
     public Sudoku readScreen(){

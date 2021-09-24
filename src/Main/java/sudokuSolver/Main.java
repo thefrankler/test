@@ -1,5 +1,7 @@
 package sudokuSolver;
 
+import sudokuSolver.Panels.MainPanel;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -18,7 +20,7 @@ public class Main {
         frame = new JFrame("Sudoku puzzle");
         MainPanel panel = new MainPanel();
         frame.getContentPane().add(panel);
-        frame.setSize(600, 600);
+        frame.setSize(600, 700);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true); //contains paint()

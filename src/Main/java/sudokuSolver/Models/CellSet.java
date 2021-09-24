@@ -1,4 +1,4 @@
-package sudokuSolver;
+package sudokuSolver.Models;
 
 public class CellSet {
     private Cell[] set;

@@ -1,13 +1,17 @@
-package sudokuSolver;
+package sudokuSolver.Models;
 
-import javax.swing.*;
 import java.util.*;
+
+import static java.lang.Math.max;
 
 public class Sudoku {
 
     private Cell[][] cells = new Cell[9][9];
-    public Sudoku solution;
+    private Sudoku solution;
+    private Difficulty difficulty;
+    public int maxLevel = 1;
 
+    //region CRUD
     public Sudoku() {
         for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
             cells[row][column] = new Cell(row,column);
@@ -70,6 +74,20 @@ public class Sudoku {
         return box;
     }
 
+    public Difficulty getDifficulty() {
+        if (difficulty == null) {
+            getSolutionAndDifficulty();
+        }
+        return difficulty;
+    }
+
+    public Sudoku getSolution() throws NoSolutionsException, MultipleSolutionsException {
+        if (solution == null) {
+                bruteSolve();
+        }
+        return solution;
+    }
+
     public boolean isFull() {
         for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
             if (cells[row][column].isEmpty()) { return false; }
@@ -102,7 +120,9 @@ public class Sudoku {
         }
         return true;
     }
+    //endregion
 
+    //region Brute Solve
     public Vector<Integer> cellOptions(int rowIndex, int columnIndex) {
         int[] isDigitForbidden = new int[9];
         Vector<Integer> options = new Vector<>();
@@ -136,33 +156,88 @@ public class Sudoku {
         return options;
     }
 
-    public Sudoku solve() {
+    public Sudoku minimize(Difficulty level) throws NoSolutionsException {
+        Sudoku sudoku = this.clone();
+        Random rand = new Random();
+
+        //make list of unchecked cells
+        ArrayList<int[]> cellCoordinateList = new ArrayList<>();
+        for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
+            cellCoordinateList.add(new int[] {row,column});
+        }
+
+        long start = System.currentTimeMillis();
+        long finish = start + 10*1000; // 10 seconds * 1000 ms/sec
+        while (System.currentTimeMillis() < finish && cellCoordinateList.size()>0) {
+
+            //randomly select a cell to check
+            int index = rand.nextInt(cellCoordinateList.size());
+            int row = cellCoordinateList.get(index)[0];
+            int column = cellCoordinateList.get(index)[1];
+
+            Sudoku newSudoku = sudoku.clone();
+            newSudoku.getCell(row, column).clear();
+            newSudoku.solution = null;
+
+            int numSolutions = newSudoku.getSolutions().size();
+            if (newSudoku.solution != null && newSudoku.getDifficulty().ordinal() <= level.ordinal()) {
+                sudoku = newSudoku;
+            } else if (numSolutions == 0) {
+                throw new NoSolutionsException();
+            }
+
+            cellCoordinateList.remove(index);
+        }
+        return sudoku;
+    }
+
+    public static Sudoku randomPuzzle() {
+        Sudoku sudoku = new Sudoku();
+        Random rand = new Random();
+        long start = System.currentTimeMillis();
+        long end = start + 10*1000; // 10 seconds * 1000 ms/sec
+
+        while (System.currentTimeMillis() < end) {
+            //fill a cell randomly
+            int cell = rand.nextInt(81);
+            if (sudoku.getCell(cell / 9, cell % 9).isEmpty()) {
+                Vector<Integer> options = sudoku.cellOptions(cell/9,cell%9);
+                int size = options.size();
+
+                if (size == 0) { // no options for cell, remove random cell
+                    int index = rand.nextInt(81);
+                    sudoku.getCell(index / 9, index % 9).clear();
+                } else {
+                    int digit = rand.nextInt(size);
+                    sudoku.getCell(cell / 9, cell % 9).setValue(options.get(digit));
+                }
+
+                sudoku.getSolutions();
+                if (sudoku.solution != null) { // unique solution, output the puzzle
+                    return sudoku;
+                } // else there are multiple solutions, so continue
+            }
+        }
+        return new Sudoku();
+    }
+
+    public Sudoku bruteSolve() throws NoSolutionsException, MultipleSolutionsException {
         if (solution != null) {
             if (checkAgainstSolution()) {
                 return solution;
             } else {
-                JOptionPane.showMessageDialog(new JFrame(),
-                    "There are no solutions.",
-                    "Warning",
-                    JOptionPane.WARNING_MESSAGE);
+                throw new NoSolutionsException();
             }
         } else {
             HashSet<Sudoku> solutions = getSolutions();
             if (solutions.size() == 0) {
-                JOptionPane.showMessageDialog(new JFrame(),
-                        "There are no solutions.",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
+                throw new NoSolutionsException();
             } else if (solutions.size() > 1) {
-                JOptionPane.showMessageDialog(new JFrame(),
-                        "There is more than one solution.",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
+                throw new MultipleSolutionsException();
             } else {
                 return solutions.iterator().next();
             }
         }
-        return null;
     }
 
     public HashSet<Sudoku> getSolutions() {
@@ -214,82 +289,78 @@ public class Sudoku {
         }
         return solutions;
     }
+    //endregion
 
-    public Sudoku minimize() throws Exception {
-        Sudoku sudoku = this.clone();
-        Random rand = new Random();
+    //region Difficulty
 
-        //make list of unchecked cells
-        ArrayList<int[]> cellCoordinateList = new ArrayList<>();
-        for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
-            cellCoordinateList.add(new int[] {row,column});
+    public void getSolutionAndDifficulty() {
+        if (solution != null && difficulty != null) {
+            return;
         }
 
-        long start = System.currentTimeMillis();
-        long finish = start + 30*1000; // 30 seconds * 1000 ms/sec
-        while (System.currentTimeMillis() < finish && cellCoordinateList.size()>0) {
+        if (this.isFull()) {
+            if (this.isSolved()) {
+                solution = this.clone();
+                difficulty = Difficulty.EASY;
+                return;
+            }
+        } else {
+            Vector<Sudoku> options = new Vector<>();
 
-            //randomly select a cell to check
-            int index = rand.nextInt(cellCoordinateList.size());
-            int row = cellCoordinateList.get(index)[0];
-            int column = cellCoordinateList.get(index)[1];
-
-            Sudoku newSudoku = sudoku.clone();
-            newSudoku.getCell(row, column).clear();
-            newSudoku.solution = null;
-
-            int numSolutions = newSudoku.getSolutions().size();
-            if (newSudoku.solution != null) {
-                sudoku = newSudoku;
-            } else if (numSolutions == 0) {
-                throw new Exception("There are no solutions");
+            int level = 0;
+            while (options.isEmpty() && level <= maxLevel) {
+                options = getOptionsForLevel(level++);
+            }
+            Difficulty moveDifficulty = Difficulty.EASY;
+            if (level > 1) {
+                moveDifficulty = Difficulty.MEDIUM;
             }
 
-            cellCoordinateList.remove(index);
+            if (!options.isEmpty()){
+                solution = options.firstElement().solution;
+                difficulty = Difficulty.values()[max(
+                        moveDifficulty.ordinal(),
+                        options.stream()
+                                .mapToInt(option -> option.getDifficulty().ordinal())
+                                .min()
+                                .orElseThrow(NoSuchElementException::new)
+                )];
+                return;
+            } else {
+                //uncomment this if this method is ever used to get the solutions.
+//                try {
+//                    solution = getSolution();
+//                } catch (NoSolutionsException | MultipleSolutionsException e) {
+//                    solution = null;
+//                }
+                difficulty = Difficulty.values()[Difficulty.values().length - 1];
+                return;
+            }
         }
-        return sudoku;
     }
 
-    public static Sudoku randomSolution() {
-        Sudoku sudoku = new Sudoku();
-        Random rand = new Random();
-        long start = System.currentTimeMillis();
-        long end = start + 10*1000; // 10 seconds * 1000 ms/sec
-
-        while (System.currentTimeMillis() < end) {
-            //fill a cell randomly
-            int cell = rand.nextInt(81);
-            if (sudoku.getCell(cell / 9, cell % 9).isEmpty()) {
-                Vector<Integer> options = sudoku.cellOptions(cell/9,cell%9);
-                int size = options.size();
-
-                if (size == 0) { // no options for cell, remove random cell
-                    int index = rand.nextInt(81);
-                    sudoku.getCell(index / 9, index % 9).clear();
-                } else {
-                    int digit = rand.nextInt(size);
-                    sudoku.getCell(cell / 9, cell % 9).setValue(options.get(digit));
+    public Vector<Sudoku> getOptionsForLevel(int level) {
+        Vector<Sudoku> options = new Vector<Sudoku>();
+        if (level == 0) {
+            // Naked single
+            // only 1 option for a number in a particular row, column or box
+            for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
+                if (this.getCell(row, column).isEmpty()) {
+                    Vector<Integer> optionsVector = this.cellOptions(row, column);
+                    if (optionsVector.size() == 1) {
+                        Sudoku sudoku = this.clone();
+                        sudoku.getCell(row, column).setValue(optionsVector.firstElement());
+                        options.add(sudoku);
+                    }
                 }
-
-                sudoku.getSolutions();
-                if (sudoku.solution != null) { // unique solution, output the puzzle
-                    return sudoku.solution;
-                } // else there are multiple solutions, so continue
             }
+
         }
-        return new Sudoku();
+
+        return options;
     }
 
-    public static Sudoku randomPuzzle() {
-        try {
-            Sudoku sudoku = randomSolution();
-            return sudoku.minimize();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(new JFrame(),
-                    e);
-            return null;
-        }
-    }
+    //endregion
 
     @Override
     public String toString() {
