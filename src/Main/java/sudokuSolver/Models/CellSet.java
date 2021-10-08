@@ -1,4 +1,7 @@
-package sudokuSolver.Models;
+package sudokuSolver.models;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class CellSet {
     private Cell[] set;
@@ -28,6 +31,10 @@ public class CellSet {
 
     public Cell getCell(int index) {
         return set[index];
+    }
+
+    public List<Cell> getCells() {
+        return Arrays.asList(set);
     }
 
     public boolean isSolved() {

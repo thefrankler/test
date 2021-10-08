@@ -1,6 +1,6 @@
-package sudokuSolver.Panels;
+package sudokuSolver.panels;
 
-import sudokuSolver.Models.Difficulty;
+import sudokuSolver.models.Difficulty;
 
 import javax.swing.*;
 import java.awt.*;

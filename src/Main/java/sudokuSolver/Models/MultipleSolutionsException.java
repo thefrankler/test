@@ -1,4 +1,4 @@
-package sudokuSolver.Models;
+package sudokuSolver.models;
 
 public class MultipleSolutionsException extends Exception {
     public MultipleSolutionsException() {

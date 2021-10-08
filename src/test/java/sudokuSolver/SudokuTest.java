@@ -2,8 +2,8 @@ package sudokuSolver;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import sudokuSolver.Models.*;
-import sudokuSolver.Panels.MainPanel;
+import sudokuSolver.models.*;
+import sudokuSolver.panels.MainPanel;
 
 import java.util.Vector;
 

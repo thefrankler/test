@@ -1,4 +1,4 @@
-package sudokuSolver.Models;
+package sudokuSolver.models;
 
 public class NoSolutionsException extends Exception {
     public NoSolutionsException() {

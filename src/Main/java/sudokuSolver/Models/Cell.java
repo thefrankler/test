@@ -1,4 +1,4 @@
-package sudokuSolver.Models;
+package sudokuSolver.models;
 
 import java.util.Vector;
 
@@ -44,6 +44,14 @@ public class Cell {
 
     public int getValue() {
         return value;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getColumn() {
+        return column;
     }
 
     public Cell setOptions(Vector<Integer> options) {

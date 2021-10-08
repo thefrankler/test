@@ -1,9 +1,9 @@
-package sudokuSolver.Panels;
+package sudokuSolver.panels;
 
-import sudokuSolver.Models.Difficulty;
-import sudokuSolver.Models.MultipleSolutionsException;
-import sudokuSolver.Models.NoSolutionsException;
-import sudokuSolver.Models.Sudoku;
+import sudokuSolver.models.Difficulty;
+import sudokuSolver.models.MultipleSolutionsException;
+import sudokuSolver.models.NoSolutionsException;
+import sudokuSolver.models.Sudoku;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,7 +11,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
-import java.util.HashSet;
 
 public class MainPanel extends JPanel implements ActionListener {
 
@@ -20,7 +19,7 @@ public class MainPanel extends JPanel implements ActionListener {
     private SudokuPanel sudokuPanel;
     private ButtonPanel buttonPanel;
     public Sudoku sudoku;
-    public Difficulty currentLevel = Difficulty.EASY;
+    public Difficulty currentLevel = Difficulty.RANDOM;
 
     public MainPanel() {
 
@@ -109,10 +108,15 @@ public class MainPanel extends JPanel implements ActionListener {
     public static Sudoku randomPuzzle(Difficulty level) {
         try {
             Sudoku sudoku;
-            do {
+            if (level == Difficulty.RANDOM){
                 sudoku = Sudoku.randomPuzzle();
                 sudoku = sudoku.minimize(level);
-            } while (sudoku.getDifficulty() != level);
+            } else {
+                do {
+                    sudoku = Sudoku.randomPuzzle();
+                    sudoku = sudoku.minimize(level);
+                } while (sudoku.getDifficulty() != level);
+            }
             return sudoku;
         } catch (NoSolutionsException e) {
             JOptionPane.showMessageDialog(new JFrame(),

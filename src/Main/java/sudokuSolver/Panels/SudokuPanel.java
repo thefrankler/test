@@ -1,12 +1,11 @@
-package sudokuSolver.Panels;
+package sudokuSolver.panels;
 
-import sudokuSolver.Models.Difficulty;
-import sudokuSolver.Models.Sudoku;
+import sudokuSolver.models.Difficulty;
+import sudokuSolver.models.Sudoku;
 
 import javax.swing.*;
 import javax.swing.text.*;
 import java.awt.*;
-import java.util.HashSet;
 
 public class SudokuPanel extends JPanel {
     public JTextField[][] gridCells;

@@ -1,15 +1,19 @@
-package sudokuSolver.Models;
+package sudokuSolver.models;
+
+import sudokuSolver.Moves;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.lang.Math.max;
+import static sudokuSolver.Moves.getOptionsForLevel;
 
 public class Sudoku {
 
     private Cell[][] cells = new Cell[9][9];
     private Sudoku solution;
     private Difficulty difficulty;
-    public int maxLevel = 1;
 
     //region CRUD
     public Sudoku() {
@@ -74,6 +78,46 @@ public class Sudoku {
         return box;
     }
 
+    public ArrayList<CellSet> getRows() {
+        ArrayList<CellSet> rows = new ArrayList();
+        for (int row = 0; row < 9; row++) {
+            rows.add(this.getRow(row));
+        }
+        return rows;
+    }
+
+    public ArrayList<CellSet> getColumns() {
+        ArrayList<CellSet> columns = new ArrayList();
+        for (int column = 0; column < 9; column++) {
+            columns.add(this.getColumn(column));
+        }
+        return columns;
+    }
+
+    public ArrayList<CellSet> getBoxes() {
+        ArrayList<CellSet> boxes = new ArrayList();
+        for (int boxRow = 0; boxRow < 3; boxRow++) for (int boxColumn = 0; boxColumn < 3; boxColumn++)  {
+            boxes.add(this.getBox(boxRow, boxColumn));
+        }
+        return boxes;
+    }
+
+    public ArrayList<CellSet> getCellSets() {
+        ArrayList<CellSet> cellSets = new ArrayList();
+        cellSets.addAll(this.getRows());
+        cellSets.addAll(this.getColumns());
+        cellSets.addAll(this.getBoxes());
+        return cellSets;
+    }
+
+    public ArrayList<Cell> getCells() {
+        ArrayList<Cell> cells = new ArrayList();
+        for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
+            cells.add(this.getCell(row, column));
+        }
+        return cells;
+    }
+
     public Difficulty getDifficulty() {
         if (difficulty == null) {
             getSolutionAndDifficulty();
@@ -123,6 +167,10 @@ public class Sudoku {
     //endregion
 
     //region Brute Solve
+    public Vector<Integer> cellOptions(Cell cell) {
+        return this.cellOptions(cell.getRow(), cell.getColumn());
+    }
+
     public Vector<Integer> cellOptions(int rowIndex, int columnIndex) {
         int[] isDigitForbidden = new int[9];
         Vector<Integer> options = new Vector<>();
@@ -180,10 +228,12 @@ public class Sudoku {
             newSudoku.solution = null;
 
             int numSolutions = newSudoku.getSolutions().size();
-            if (newSudoku.solution != null && newSudoku.getDifficulty().ordinal() <= level.ordinal()) {
+            if (numSolutions == 0) { throw new NoSolutionsException(); }
+            if (
+                    newSudoku.solution != null &&
+                    ( level == Difficulty.RANDOM || newSudoku.getDifficulty().ordinal() <= level.ordinal() )
+            ){
                 sudoku = newSudoku;
-            } else if (numSolutions == 0) {
-                throw new NoSolutionsException();
             }
 
             cellCoordinateList.remove(index);
@@ -305,11 +355,11 @@ public class Sudoku {
                 return;
             }
         } else {
-            Vector<Sudoku> options = new Vector<>();
+            Set<Sudoku> options = new LinkedHashSet();
 
             int level = 0;
-            while (options.isEmpty() && level <= maxLevel) {
-                options = getOptionsForLevel(level++);
+            while (options.isEmpty() && level <= Moves.maxLevel) {
+                options = getOptionsForLevel(level++, this);
             }
             Difficulty moveDifficulty = Difficulty.EASY;
             if (level > 1) {
@@ -317,7 +367,7 @@ public class Sudoku {
             }
 
             if (!options.isEmpty()){
-                solution = options.firstElement().solution;
+                solution = options.iterator().next().solution;
                 difficulty = Difficulty.values()[max(
                         moveDifficulty.ordinal(),
                         options.stream()
@@ -337,27 +387,6 @@ public class Sudoku {
                 return;
             }
         }
-    }
-
-    public Vector<Sudoku> getOptionsForLevel(int level) {
-        Vector<Sudoku> options = new Vector<Sudoku>();
-        if (level == 0) {
-            // Naked single
-            // only 1 option for a number in a particular row, column or box
-            for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
-                if (this.getCell(row, column).isEmpty()) {
-                    Vector<Integer> optionsVector = this.cellOptions(row, column);
-                    if (optionsVector.size() == 1) {
-                        Sudoku sudoku = this.clone();
-                        sudoku.getCell(row, column).setValue(optionsVector.firstElement());
-                        options.add(sudoku);
-                    }
-                }
-            }
-
-        }
-
-        return options;
     }
 
     //endregion
