@@ -1,8 +1,7 @@
-package sudokuSolver;
+package sudokuSolver.models;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import sudokuSolver.models.*;
 import sudokuSolver.panels.MainPanel;
 
 import java.util.Vector;
@@ -57,6 +56,12 @@ public class SudokuTest {
     Sudoku almostSolvedSudoku = new Sudoku(almostSolved);
 
     @Test
+    public void testEquals() {
+        Sudoku clone = dummySudoku.clone();
+        Assertions.assertEquals(dummySudoku, clone);
+    }
+
+    @Test
     public void testGetBox() {
         CellSet box = new CellSet(new int[]{7, 9, 5, 4, 3, 8, 1, 2, 6});
         Assertions.assertEquals(box, testSolution.getBox(1,2));
@@ -66,7 +71,7 @@ public class SudokuTest {
     public void testSudokuInit() {
         Sudoku blank = new Sudoku();
         Assertions.assertTrue(blank.getCell(0, 0).isEmpty());
-        Assertions.assertTrue(blank.getSolutions().size() > 1);
+        Assertions.assertTrue(blank.calculateSolutions().size() > 1);
     }
 
     @Test
@@ -87,14 +92,14 @@ public class SudokuTest {
 
     @Test
     public void testBlankSolutions() {
-        int solutions = (new Sudoku()).getSolutions().size();
+        int solutions = (new Sudoku()).calculateSolutions().size();
         Assertions.assertEquals(2, solutions);
     }
 
     @Test
     public void testUniqueSolution() {
         Sudoku clone = almostSolvedSudoku.clone();
-        int solutions = almostSolvedSudoku.getSolutions().size();
+        int solutions = almostSolvedSudoku.calculateSolutions().size();
         Assertions.assertEquals(1, solutions);
         Assertions.assertEquals(clone, almostSolvedSudoku);
     }
@@ -107,7 +112,6 @@ public class SudokuTest {
     @Test
     public void testRandomPuzzle() {
         Sudoku sudoku = MainPanel.randomPuzzle(Difficulty.EASY);
-        System.out.println(sudoku);
         Assertions.assertFalse(sudoku.isFull());
     }
 }

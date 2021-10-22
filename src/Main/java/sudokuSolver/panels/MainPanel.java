@@ -110,12 +110,16 @@ public class MainPanel extends JPanel implements ActionListener {
             Sudoku sudoku;
             if (level == Difficulty.RANDOM){
                 sudoku = Sudoku.randomPuzzle();
-                sudoku = sudoku.minimize(level);
+                sudoku = sudoku.minimise(level);
             } else {
+                Difficulty difficulty;
                 do {
                     sudoku = Sudoku.randomPuzzle();
-                    sudoku = sudoku.minimize(level);
-                } while (sudoku.getDifficulty() != level);
+                    sudoku = sudoku.minimise(level);
+
+                    difficulty = sudoku.getDifficulty();
+                    System.out.println("Difficulty: " + difficulty);
+                } while (difficulty != level);
             }
             return sudoku;
         } catch (NoSolutionsException e) {

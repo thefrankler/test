@@ -1,13 +1,8 @@
 package sudokuSolver.models;
 
 import sudokuSolver.Moves;
-
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static java.lang.Math.max;
-import static sudokuSolver.Moves.getOptionsForLevel;
 
 public class Sudoku {
 
@@ -120,14 +115,18 @@ public class Sudoku {
 
     public Difficulty getDifficulty() {
         if (difficulty == null) {
-            getSolutionAndDifficulty();
+            try {
+                difficulty = calculateDifficulty();
+            } catch (Exception e) {
+                return null;
+            }
         }
         return difficulty;
     }
 
     public Sudoku getSolution() throws NoSolutionsException, MultipleSolutionsException {
         if (solution == null) {
-                bruteSolve();
+            solution = bruteSolve();
         }
         return solution;
     }
@@ -153,15 +152,6 @@ public class Sudoku {
             if (!getBox(row, column).isSolved()) { return false; }
         }
 
-        return true;
-    }
-
-    public boolean checkAgainstSolution() {
-        for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
-            if (cells[row][column] != solution.getCell(row, column) && !cells[row][column].isEmpty()) {
-                return false;
-            }
-        }
         return true;
     }
     //endregion
@@ -204,7 +194,9 @@ public class Sudoku {
         return options;
     }
 
-    public Sudoku minimize(Difficulty level) throws NoSolutionsException {
+    public Sudoku minimise(Difficulty level) throws NoSolutionsException {
+        System.out.println("Minimising puzzle");
+
         Sudoku sudoku = this.clone();
         Random rand = new Random();
 
@@ -215,7 +207,7 @@ public class Sudoku {
         }
 
         long start = System.currentTimeMillis();
-        long finish = start + 10*1000; // 10 seconds * 1000 ms/sec
+        long finish = start + 5*1000; // 5 seconds * 1000 ms/sec
         while (System.currentTimeMillis() < finish && cellCoordinateList.size()>0) {
 
             //randomly select a cell to check
@@ -227,11 +219,11 @@ public class Sudoku {
             newSudoku.getCell(row, column).clear();
             newSudoku.solution = null;
 
-            int numSolutions = newSudoku.getSolutions().size();
+            int numSolutions = newSudoku.calculateSolutions().size();
             if (numSolutions == 0) { throw new NoSolutionsException(); }
             if (
-                    newSudoku.solution != null &&
-                    ( level == Difficulty.RANDOM || newSudoku.getDifficulty().ordinal() <= level.ordinal() )
+                newSudoku.solution != null &&
+                ( level == Difficulty.RANDOM || newSudoku.getDifficulty().ordinal() <= level.ordinal() )
             ){
                 sudoku = newSudoku;
             }
@@ -242,44 +234,42 @@ public class Sudoku {
     }
 
     public static Sudoku randomPuzzle() {
+        System.out.println("Generating random puzzle");
         Sudoku sudoku = new Sudoku();
         Random rand = new Random();
         long start = System.currentTimeMillis();
         long end = start + 10*1000; // 10 seconds * 1000 ms/sec
+        List<Cell> emptyCells = sudoku.getCells();
+        List<Cell> filledCells = new ArrayList<>();
 
         while (System.currentTimeMillis() < end) {
             //fill a cell randomly
-            int cell = rand.nextInt(81);
-            if (sudoku.getCell(cell / 9, cell % 9).isEmpty()) {
-                Vector<Integer> options = sudoku.cellOptions(cell/9,cell%9);
-                int size = options.size();
+            Cell cell = emptyCells.get(rand.nextInt(emptyCells.size()));
+            Vector<Integer> options = sudoku.cellOptions(cell);
 
-                if (size == 0) { // no options for cell, remove random cell
-                    int index = rand.nextInt(81);
-                    sudoku.getCell(index / 9, index % 9).clear();
-                } else {
-                    int digit = rand.nextInt(size);
-                    sudoku.getCell(cell / 9, cell % 9).setValue(options.get(digit));
-                }
-
-                sudoku.getSolutions();
-                if (sudoku.solution != null) { // unique solution, output the puzzle
-                    return sudoku;
-                } // else there are multiple solutions, so continue
+            if (options.size() == 0) { // no options for cell, remove random cell
+                Cell filledCell = filledCells.get(rand.nextInt(filledCells.size()));
+                filledCell.clear();
+                filledCells.remove(filledCell);
+                emptyCells.add(filledCell);
+            } else {
+                int digit = rand.nextInt(options.size());
+                cell.setValue(options.get(digit));
+                filledCells.add(cell);
+                emptyCells.remove(cell);
             }
+
+            sudoku.calculateSolutions();
+            if (sudoku.solution != null) { // unique solution, output the puzzle
+                return sudoku;
+            } // else there are multiple solutions, so continue
         }
         return new Sudoku();
     }
 
     public Sudoku bruteSolve() throws NoSolutionsException, MultipleSolutionsException {
-        if (solution != null) {
-            if (checkAgainstSolution()) {
-                return solution;
-            } else {
-                throw new NoSolutionsException();
-            }
-        } else {
-            HashSet<Sudoku> solutions = getSolutions();
+        if (solution == null) {
+            HashSet<Sudoku> solutions = calculateSolutions();
             if (solutions.size() == 0) {
                 throw new NoSolutionsException();
             } else if (solutions.size() > 1) {
@@ -287,10 +277,16 @@ public class Sudoku {
             } else {
                 return solutions.iterator().next();
             }
+        } else {
+            if (this == this.solution) {
+                return solution;
+            } else {
+                throw new NoSolutionsException();
+            }
         }
     }
 
-    public HashSet<Sudoku> getSolutions() {
+    public HashSet<Sudoku> calculateSolutions() {
         Stack<Sudoku> options = new Stack<>();
         HashSet<Sudoku> solutions = new HashSet<>();
 
@@ -342,24 +338,23 @@ public class Sudoku {
     //endregion
 
     //region Difficulty
-
-    public void getSolutionAndDifficulty() {
-        if (solution != null && difficulty != null) {
-            return;
+    public Difficulty calculateDifficulty() throws NoSolutionsException {
+        if (difficulty != null) {
+            return difficulty;
         }
 
-        if (this.isFull()) {
-            if (this.isSolved()) {
-                solution = this.clone();
-                difficulty = Difficulty.EASY;
-                return;
+        if (isFull()) {
+            if (isSolved()) {
+                return Difficulty.EASY;
+            } else {
+                throw new NoSolutionsException();
             }
         } else {
             Set<Sudoku> options = new LinkedHashSet();
 
             int level = 0;
             while (options.isEmpty() && level <= Moves.maxLevel) {
-                options = getOptionsForLevel(level++, this);
+                options = Moves.getOptionsForLevel(level++, this);
             }
             Difficulty moveDifficulty = Difficulty.EASY;
             if (level > 1) {
@@ -367,28 +362,18 @@ public class Sudoku {
             }
 
             if (!options.isEmpty()){
-                solution = options.iterator().next().solution;
-                difficulty = Difficulty.values()[max(
-                        moveDifficulty.ordinal(),
-                        options.stream()
-                                .mapToInt(option -> option.getDifficulty().ordinal())
-                                .min()
-                                .orElseThrow(NoSuchElementException::new)
+                return Difficulty.values()[max(
+                    moveDifficulty.ordinal(),
+                    options.stream()
+                        .mapToInt(option -> option.getDifficulty().ordinal())
+                        .min()
+                        .orElseThrow(NoSuchElementException::new)
                 )];
-                return;
             } else {
-                //uncomment this if this method is ever used to get the solutions.
-//                try {
-//                    solution = getSolution();
-//                } catch (NoSolutionsException | MultipleSolutionsException e) {
-//                    solution = null;
-//                }
-                difficulty = Difficulty.values()[Difficulty.values().length - 1];
-                return;
+                return Difficulty.values()[Difficulty.values().length - 1]; // hardest difficulty
             }
         }
     }
-
     //endregion
 
     @Override
@@ -411,22 +396,15 @@ public class Sudoku {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (object == this) {
-            return true;
-        }
+    public int hashCode() {
+        return getCells().hashCode();
+    }
 
-        if (!(object instanceof Sudoku)) {
-            return false;
-        }
-        Sudoku other = (Sudoku) object;
-
-
-        for (int row = 0; row < 9; row++) for (int column = 0; column < 9; column++) {
-            if (other.getCell(row, column).getValue() != this.getCell(row, column).getValue()) {
-                return false;
-            }
-        }
-        return true;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (getClass() != o.getClass()) return false;
+        Sudoku sudoku = (Sudoku) o;
+        return getCells().equals(sudoku.getCells());
     }
 }

@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Moves {
-    public static int maxLevel = 1;
+    public static int maxLevel = 0;
 
     public static Set<Sudoku> getOptionsForLevel(int level, Sudoku sudoku) {
         Set<Sudoku> options = new LinkedHashSet();
@@ -20,8 +20,8 @@ public class Moves {
         return options;
     }
 
-    private static Set<Sudoku> nakedSingle(Sudoku sudoku) {
-        // only 1 option for a number in a particular row, column or box
+    public static Set<Sudoku> nakedSingle(Sudoku sudoku) {
+        // only 1 option for a number in a particular cell
         Set<Sudoku> options = new LinkedHashSet();
 
         for (Cell cell : sudoku.getCells()) {
@@ -37,7 +37,7 @@ public class Moves {
         return options;
     }
 
-    private static Set<Sudoku> hiddenSingle(Sudoku sudoku) {
+    public static Set<Sudoku> hiddenSingle(Sudoku sudoku) {
         // only 1 number available in a particular row, column or box
         Set<Sudoku> options = new LinkedHashSet();
 
@@ -47,10 +47,8 @@ public class Moves {
             for (int digit = 0; digit < 9; digit++) {
                 optionsForDigit.put(digit, new ArrayList());
                 for (Cell cell : cellSet.getCells()) {
-                    if (!cell.isEmpty()) {
-                        if (sudoku.cellOptions(cell.getRow(), cell.getColumn()).contains(digit)) {
-                            optionsForDigit.get(digit).add(cell);
-                        }
+                    if (cell.isEmpty() && sudoku.cellOptions(cell).contains(digit)) {
+                        optionsForDigit.get(digit).add(cell);
                     }
                 }
             }
