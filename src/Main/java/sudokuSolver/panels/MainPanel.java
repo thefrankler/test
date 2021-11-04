@@ -80,6 +80,13 @@ public class MainPanel extends JPanel implements ActionListener {
         else if ( Arrays.asList(buttonPanel.difficultyButtons).contains(event.getSource()) ) {
             Difficulty level = Difficulty.values()[Arrays.asList(buttonPanel.difficultyButtons).indexOf(event.getSource())];
             currentLevel = level;
+
+            for (Difficulty buttonLevel : Difficulty.values()) {
+                buttonPanel.difficultyButtons[buttonLevel.ordinal()].setBackground(Color.GRAY);
+                buttonPanel.difficultyButtons[buttonLevel.ordinal()].setForeground(Color.BLACK);
+            }
+            buttonPanel.difficultyButtons[level.ordinal()].setBackground(Color.BLUE);
+            buttonPanel.difficultyButtons[level.ordinal()].setForeground(Color.GRAY);
         }
 
     }

@@ -33,6 +33,11 @@ public class ButtonPanel extends JPanel {
             difficultyButtons[level.ordinal()] = new JButton(level.toString());
             difficultyPanel.add(difficultyButtons[level.ordinal()]);
             difficultyButtons[level.ordinal()].addActionListener(parent);
+
+            if (parent.currentLevel.equals(level)) {
+                difficultyButtons[level.ordinal()].setBackground(Color.BLUE);
+                difficultyButtons[level.ordinal()].setForeground(Color.GRAY);
+            }
         }
 
     }
