@@ -16,16 +16,19 @@ public class MainPanel extends JPanel implements ActionListener {
 
     static final long serialVersionUID = 42L;
 
+    public Sudoku sudoku;
+    public Difficulty currentLevel = Difficulty.EASY;
+
     private SudokuPanel sudokuPanel;
     private ButtonPanel buttonPanel;
-    public Sudoku sudoku;
-    public Difficulty currentLevel = Difficulty.RANDOM;
+    private LoadingPanel loadingPanel;
 
     public MainPanel() {
 
         //set variables
         buttonPanel = new ButtonPanel(this);
         sudokuPanel = new SudokuPanel();
+        loadingPanel = new LoadingPanel();
         setLayout(new BorderLayout());
 
         //Layout and borders
@@ -91,7 +94,7 @@ public class MainPanel extends JPanel implements ActionListener {
 
     }
 
-    private void getNext() {
+    public void getNext() {
         this.sudokuPanel.setScreen(randomPuzzle(currentLevel));
     }
 
@@ -138,4 +141,12 @@ public class MainPanel extends JPanel implements ActionListener {
         return null;
     }
 
+    public void startLoading() {
+        JLabel imageLabel = new JLabel();
+        loadingPanel = new JPanel(this);
+    }
+
+    public void finishLoading() {
+
+    }
 }

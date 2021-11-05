@@ -1,16 +1,18 @@
 package sudokuSolver.panels;
 
-import sudokuSolver.models.Difficulty;
 import sudokuSolver.models.Sudoku;
 
 import javax.swing.*;
-import javax.swing.text.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import java.awt.*;
 
-public class SudokuPanel extends JPanel {
+public class LoadingPanel extends JPanel {
     public JTextField[][] gridCells;
 
-    public SudokuPanel() {
+    public LoadingPanel() {
         setPreferredSize(new Dimension(400, 400));
         Font font1 = new Font("SansSerif", Font.PLAIN, 20);
 
@@ -74,7 +76,7 @@ public class SudokuPanel extends JPanel {
             add(gridCells[row][column]);
         }
 
-        this.setScreen(MainPanel.randomPuzzle(Difficulty.EASY) );
+        this.setScreen(new Sudoku());
     }
 
     public Sudoku readScreen(){
