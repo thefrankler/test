@@ -19,24 +19,25 @@ public class MainPanel extends JPanel implements ActionListener {
     public Sudoku sudoku;
     public Difficulty currentLevel = Difficulty.EASY;
 
+    private JPanel contentPanel;
     private SudokuPanel sudokuPanel;
     private ButtonPanel buttonPanel;
-    private LoadingPanel loadingPanel;
 
     public MainPanel() {
-
         //set variables
         buttonPanel = new ButtonPanel(this);
         sudokuPanel = new SudokuPanel();
-        loadingPanel = new LoadingPanel();
+
+        setPreferredSize(new Dimension(600, 700));
         setLayout(new BorderLayout());
+        setBackground(Color.red);
 
         //Layout and borders
         sudokuPanel.setBorder(new EmptyBorder(50, 70, 50, 70)); //top, left, bottom, right
         buttonPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        this.add(BorderLayout.CENTER, sudokuPanel);
-        this.add(BorderLayout.SOUTH, buttonPanel);
+        add(BorderLayout.CENTER, sudokuPanel);
+        add(BorderLayout.SOUTH, buttonPanel);
 
     }
 
@@ -139,14 +140,5 @@ public class MainPanel extends JPanel implements ActionListener {
                     JOptionPane.WARNING_MESSAGE);
         }
         return null;
-    }
-
-    public void startLoading() {
-        JLabel imageLabel = new JLabel();
-        loadingPanel = new JPanel(this);
-    }
-
-    public void finishLoading() {
-
     }
 }
