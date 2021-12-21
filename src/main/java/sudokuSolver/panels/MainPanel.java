@@ -1,5 +1,6 @@
 package sudokuSolver.panels;
 
+import sudokuSolver.Main;
 import sudokuSolver.models.Difficulty;
 import sudokuSolver.models.MultipleSolutionsException;
 import sudokuSolver.models.NoSolutionsException;
@@ -10,6 +11,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Arrays;
 
 public class MainPanel extends JPanel implements ActionListener {
@@ -17,16 +20,18 @@ public class MainPanel extends JPanel implements ActionListener {
     static final long serialVersionUID = 42L;
 
     public Sudoku sudoku;
-    public Difficulty currentLevel = Difficulty.EASY;
+    public Difficulty currentLevel = Difficulty.RANDOM;
 
-    private JPanel contentPanel;
+    private JFrame parent;
     private SudokuPanel sudokuPanel;
     private ButtonPanel buttonPanel;
+    static private JPanel loadingPanel;
 
-    public MainPanel() {
+    public MainPanel(JFrame parent) {
         //set variables
         buttonPanel = new ButtonPanel(this);
         sudokuPanel = new SudokuPanel();
+        this.parent = parent;
 
         setPreferredSize(new Dimension(600, 700));
         setLayout(new BorderLayout());
@@ -39,6 +44,7 @@ public class MainPanel extends JPanel implements ActionListener {
         add(BorderLayout.CENTER, sudokuPanel);
         add(BorderLayout.SOUTH, buttonPanel);
 
+        createLoadingPanel();
     }
 
     public void actionPerformed(ActionEvent event) {
@@ -59,7 +65,7 @@ public class MainPanel extends JPanel implements ActionListener {
                         options,
                         options[0]);
                 if (successPanel == JOptionPane.DEFAULT_OPTION) {
-                    this.sudokuPanel.setScreen(randomPuzzle(currentLevel));
+                    return;
                 } else if (options[successPanel] == "Next puzzle") {
                     getNext();
                 }
@@ -71,12 +77,14 @@ public class MainPanel extends JPanel implements ActionListener {
 
         }
         else if (event.getSource() == buttonPanel.solveButton) {
+            startLoading();
             sudoku = sudokuPanel.readScreen();
 
             Sudoku solution = getSolution(sudoku);
             if (solution != null) {
                 this.sudokuPanel.setScreen(solution);
             }
+            finishLoading();
         }
         else if (event.getSource() == buttonPanel.nextButton) {
             getNext();
@@ -96,7 +104,9 @@ public class MainPanel extends JPanel implements ActionListener {
     }
 
     public void getNext() {
+        startLoading();
         this.sudokuPanel.setScreen(randomPuzzle(currentLevel));
+        finishLoading();
     }
 
     public Sudoku getSolution(Sudoku sudoku) {
@@ -140,5 +150,50 @@ public class MainPanel extends JPanel implements ActionListener {
                     JOptionPane.WARNING_MESSAGE);
         }
         return null;
+    }
+
+    public void createLoadingPanel() {
+        loadingPanel = (JPanel) parent.getGlassPane();
+        loadingPanel.setLayout(new BorderLayout());
+        loadingPanel.addMouseListener(new MouseAdapter()
+        {
+            @Override
+            public void mouseClicked(MouseEvent e)
+            {
+                e.consume();
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                e.consume();
+            }
+        });
+
+        int transparency = 200;
+        ImageIcon image = new ImageIcon(Main.class.getClassLoader().getResource("gif/sliding-squares-2.gif"));
+
+        JLabel label = new JLabel(image) {
+            protected void paintComponent(Graphics g)
+            {
+                g.setColor( new Color(255,255,255,transparency) );
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paintComponent(g);
+            }
+        };
+        label.setVerticalAlignment(JLabel.CENTER);
+        label.setHorizontalAlignment(JLabel.CENTER);
+
+        loadingPanel.add(label);
+    }
+
+    private void startLoading() {
+        System.out.println("------- start loading --------");
+        loadingPanel.setVisible(true);
+    }
+
+    private void finishLoading() {
+        loadingPanel.setVisible(false);
+        System.out.println("------- finish loading --------");
     }
 }
