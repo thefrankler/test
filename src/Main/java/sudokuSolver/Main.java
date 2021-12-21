@@ -8,6 +8,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 
 public class Main {
@@ -57,20 +58,19 @@ public class Main {
             }
         });
 
-        ImageIcon image = new ImageIcon(Main.class.getClassLoader().getResource("gif/sliding-squares.gif"));
+        int transparency = 200;
+        ImageIcon image = new ImageIcon(Main.class.getClassLoader().getResource("gif/sliding-squares-2.gif"));
+
         JLabel label = new JLabel(image) {
             protected void paintComponent(Graphics g)
             {
-                g.setColor( getBackground() );
+                g.setColor( new Color(255,255,255,transparency) );
                 g.fillRect(0, 0, getWidth(), getHeight());
                 super.paintComponent(g);
             }
         };
         label.setVerticalAlignment(JLabel.CENTER);
         label.setHorizontalAlignment(JLabel.CENTER);
-
-        label.setOpaque(false);
-        label.setBackground(new Color(1, 1, 1, 0.5F) );
 
         loadingPanel.add(label);
     }
