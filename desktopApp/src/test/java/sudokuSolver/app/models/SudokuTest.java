@@ -109,9 +109,9 @@ public class SudokuTest {
         Assertions.assertEquals(almostSolvedSudoku.getDifficulty(), Difficulty.EASY);
     }
 
-    @Test
-    public void testRandomPuzzle() {
-        Sudoku sudoku = MainPanel.randomPuzzle(Difficulty.EASY);
-        Assertions.assertFalse(sudoku.isFull());
-    }
+//    @Test
+//    public void testRandomPuzzle() {
+//        Sudoku sudoku = MainPanel.randomPuzzle(Difficulty.EASY);
+//        Assertions.assertFalse(sudoku.isFull());
+//    }
 }

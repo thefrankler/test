@@ -153,6 +153,7 @@ public class MainPanel extends JPanel implements ActionListener {
     }
 
     public void createLoadingPanel() {
+//        TODO: Use a separate thread for the loading animation, so it can run at the same time as calculations.
         loadingPanel = (JPanel) parent.getGlassPane();
         loadingPanel.setLayout(new BorderLayout());
         loadingPanel.addMouseListener(new MouseAdapter()
