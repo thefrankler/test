@@ -128,21 +128,7 @@ public class MainPanel extends JPanel implements ActionListener {
 
     public static Sudoku randomPuzzle(Difficulty level) {
         try {
-            Sudoku sudoku;
-            if (level == Difficulty.RANDOM){
-                sudoku = Sudoku.randomPuzzle();
-                sudoku = sudoku.minimise(level);
-            } else {
-                Difficulty difficulty;
-                do {
-                    sudoku = Sudoku.randomPuzzle();
-                    sudoku = sudoku.minimise(level);
-
-                    difficulty = sudoku.getDifficulty();
-                    System.out.println("Difficulty: " + difficulty);
-                } while (difficulty != level);
-            }
-            return sudoku;
+            return Sudoku.newPuzzle(level);
         } catch (NoSolutionsException e) {
             JOptionPane.showMessageDialog(new JFrame(),
                     "There are no solutions.",

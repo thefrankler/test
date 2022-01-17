@@ -2,6 +2,7 @@ package sudokuSolver.app.models;
 
 import sudokuSolver.app.Moves;
 
+import javax.swing.*;
 import java.util.*;
 import static java.lang.Math.max;
 
@@ -196,7 +197,7 @@ public class Sudoku {
     }
 
     public Sudoku minimise(Difficulty level) throws NoSolutionsException {
-        System.out.println("Minimising puzzle");
+        System.out.println("Minimising puzzle of difficulty " + level);
 
         Sudoku sudoku = this.clone();
         Random rand = new Random();
@@ -231,6 +232,7 @@ public class Sudoku {
 
             cellCoordinateList.remove(index);
         }
+        System.out.println("Minimised");
         return sudoku;
     }
 
@@ -266,6 +268,24 @@ public class Sudoku {
             } // else there are multiple solutions, so continue
         }
         return new Sudoku();
+    }
+
+    public static Sudoku newPuzzle(Difficulty level) throws NoSolutionsException {
+        Sudoku sudoku;
+        if (level == Difficulty.RANDOM){
+            sudoku = Sudoku.randomPuzzle();
+            sudoku = sudoku.minimise(level);
+        } else {
+            Difficulty difficulty;
+            do {
+                sudoku = Sudoku.randomPuzzle();
+                sudoku = sudoku.minimise(level);
+
+                difficulty = sudoku.getDifficulty();
+                System.out.println("Difficulty: " + difficulty);
+            } while (difficulty != level);
+        }
+        return sudoku;
     }
 
     public Sudoku bruteSolve() throws NoSolutionsException, MultipleSolutionsException {
@@ -340,6 +360,20 @@ public class Sudoku {
 
     //region Difficulty
     public Difficulty calculateDifficulty() throws NoSolutionsException {
+        return this.calculateDifficulty(30);
+    }
+
+    public Difficulty calculateDifficulty(int timeout) throws NoSolutionsException {
+        System.out.println("Calculating difficulty");
+
+        //make list of unchecked cells
+        ArrayList<int[]> cellCoordinateList = new ArrayList<>();
+        for (int row=0; row<9; row++) for (int column=0; column<9; column++) {
+            cellCoordinateList.add(new int[] {row,column});
+        }
+
+        long start = System.currentTimeMillis();
+        long finish = start + timeout*1000;
         if (difficulty != null) {
             return difficulty;
         }
@@ -362,16 +396,20 @@ public class Sudoku {
                 moveDifficulty = Difficulty.MEDIUM;
             }
 
-            if (!options.isEmpty()){
-                return Difficulty.values()[max(
-                    moveDifficulty.ordinal(),
-                    options.stream()
-                        .mapToInt(option -> option.getDifficulty().ordinal())
-                        .min()
-                        .orElseThrow(NoSuchElementException::new)
-                )];
-            } else {
+            if (options.isEmpty()) {
                 return Difficulty.values()[Difficulty.values().length - 1]; // hardest difficulty
+            } else {
+                if (System.currentTimeMillis() < finish) {
+                    return moveDifficulty;
+                } else {
+                    return Difficulty.values()[max(
+                        moveDifficulty.ordinal(),
+                        options.stream()
+                            .mapToInt(option -> option.getDifficulty().ordinal())
+                            .min()
+                            .orElseThrow(NoSuchElementException::new)
+                    )];
+                }
             }
         }
     }

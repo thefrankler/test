@@ -1,16 +1,21 @@
 type Query {
-  bookById(id: ID): Book
+  randomSudoku(difficulty: Difficulty): Sudoku
 }
 
-type Book {
-  id: ID
-  name: String
-  pageCount: Int
-  author: Author
+type Sudoku {
+  cells: [Cell!]!
+  solution: Sudoku
+  difficulty: Difficulty!
 }
 
-type Author {
-  id: ID
-  firstName: String
-  lastName: String
+enum Difficulty {
+  RANDOM,
+  EASY,
+  MEDIUM
+}
+
+type Cell {
+  row: Int!
+  column: Int!
+  value: Int
 }

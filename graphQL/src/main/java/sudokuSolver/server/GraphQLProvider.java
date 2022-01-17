@@ -49,10 +49,12 @@ public class GraphQLProvider {
 
     private RuntimeWiring buildWiring() {
         return RuntimeWiring.newRuntimeWiring()
+//                Gets a bok based on a specific id
                 .type(newTypeWiring("Query")
-                        .dataFetcher("bookById", graphQLDataFetchers.getBookByIdDataFetcher()))
-                .type(newTypeWiring("Book")
-                        .dataFetcher("author", graphQLDataFetchers.getAuthorDataFetcher()))
+                        .dataFetcher("randomSudoku", graphQLDataFetchers.getRandomSudokuDataFetcher()))
+//                Gets the author for a specific book
+                .type(newTypeWiring("Sudoku")
+                        .dataFetcher("cells", graphQLDataFetchers.getCellsDataFetcher()))
                 .build();
     }
 }
