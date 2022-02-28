@@ -5,8 +5,6 @@ import org.springframework.stereotype.Component;
 import sudokuSolver.app.models.Difficulty;
 import sudokuSolver.app.models.Sudoku;
 
-import java.util.Map;
-
 @Component
 public class GraphQLDataFetchers {
 

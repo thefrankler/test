@@ -22,3 +22,21 @@ target/
 
 ### Jupyter Notebook ###
 .ipynb_checkpoints/
+
+
+# react
+/webApp/node_modules
+/webApp/.pnp
+webApp/.pnp.js
+/webApp/coverage
+/webApp/build
+
+webApp/.DS_Store
+webApp/.env.local
+webApp/.env.development.local
+webApp/.env.test.local
+webApp/.env.production.local
+
+webApp/npm-debug.log*
+webApp/yarn-debug.log*
+webApp/yarn-error.log*
