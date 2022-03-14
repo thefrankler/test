@@ -2,33 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Grid from './grid';
+import Difficulty from './difficulty';
+import getNextPuzzle from './graphQlConnector';
 
 class Game extends React.Component {
   constructor(props) {
     super(props);
-
-    var puzzle = [
-      [1,2,3,4,5,6,7,8,9],
-      [1,2,3,4,5,6,7,8,9],
-      [0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0],
-      [0,0,0,0,0,0,0,0,0]
-    ];
+    var puzzle = getNextPuzzle();
 
     this.state = {
       currentPuzzle: puzzle,
-      currentGrid: puzzle
+      currentGrid: puzzle,
+      difficulty: Difficulty.Random
     };
-  }
-  
-  reset() {
-    this.setState({
-      currentGrid: copy(this.state.currentPuzzle)
-    });
   }
   
   handleCellChange(row, column, value) {
@@ -40,24 +26,46 @@ class Game extends React.Component {
       currentGrid: grid
     });
   }
-
-  checkSolution(puzzle) {
-    console.log('Checking solution...');
+  
+  reset() {
+    this.setState({
+      currentGrid: copy(this.state.currentPuzzle)
+    });
   }
 
   solve(puzzle) {
     console.log('Solving...');
   }
 
+  checkSolution(puzzle) {
+    console.log('Checking...');
+  }
+
   nextPuzzle() {
-    console.log('Getting next puzzle...');
+    var puzzle = getNextPuzzle(this.state.difficulty);
+
+    this.setState({
+      currentPuzzle: puzzle,
+      currentGrid: puzzle,
+    });
   }
 
   changeDifficulty(difficulty) {
-    console.log('Changing difficulty...');
+    this.setState({
+      difficulty: difficulty
+    })
   }
 
   render() {
+    var difficultyButtons = [];
+    Difficulty.all.forEach((difficulty, i) => {
+      difficultyButtons.push(
+        <button key={i} disabled={this.state.difficulty === difficulty} onClick={() => this.changeDifficulty(difficulty)}>
+          {difficulty.name}
+        </button>
+      );
+    });
+
     return (
       <div className="game">
 
@@ -87,15 +95,7 @@ class Game extends React.Component {
           </div>
 
           <div className="difficulty-controls">
-            <button disabled={true} onClick={() => this.changeDifficulty('Random')}>
-              Random
-            </button>
-            <button onClick={() => this.changeDifficulty('Easy')}>
-              Easy
-            </button>
-            <button onClick={() => this.changeDifficulty('Medium')}>
-              Medium
-            </button>
+            {difficultyButtons}
           </div>
 
         </div>
