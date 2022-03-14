@@ -1,8 +1,12 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import Cell from './cell';
 
-class Grid extends React.Component {
-  renderCell(row, column, value, disabled) {
+class Grid extends React.Component<{
+  grid: (number | undefined)[][],
+  puzzle: (number | undefined)[][],
+  handleCellChange: (row: number, column: number, value: number | undefined) => void
+}> {
+  renderCell(row: number, column: number, value: number | undefined, disabled: boolean) {
     return (
       <Cell 
         key={row.toString() + column.toString()} 
@@ -16,13 +20,13 @@ class Grid extends React.Component {
   }
 
   render() {
-    var rows = [];
+    let rows: JSX.Element[] = [];
     this.props.grid.forEach((cellRow, row) => {
-      var cells = [];
+      let cells: JSX.Element[] = [];
       cellRow.forEach((value, column) => {
         if (value === 0) {
           cells.push(
-            this.renderCell(row, column, '', false)
+            this.renderCell(row, column, undefined, false)
           );
         } else {
           if (value === this.props.puzzle[row][column]) {
