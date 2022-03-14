@@ -7,44 +7,67 @@ ol, ul {
   padding-left: 30px;
 }
 
-.board-row:after {
+.game {
+  margin: auto;
+  max-width: 800px;
+}
+
+.grid {
+  margin: auto;
+  max-width: 324px;
+}
+
+.row:after {
   clear: both;
   content: "";
   display: table;
 }
 
-.status {
-  margin-bottom: 10px;
-}
-
-.square {
+.cell {
   background: #fff;
-  border: 1px solid #999;
+  border-left: none;
+  border-top: none;
+  border-right: 1px solid #999;
+  border-bottom: 1px solid #999;
   float: left;
   font-size: 24px;
-  font-weight: bold;
-  line-height: 34px;
-  height: 34px;
-  margin-right: -1px;
-  margin-top: -1px;
   padding: 0;
   text-align: center;
+  line-height: 34px;
+  height: 34px;
   width: 34px;
 }
 
-.square:focus {
+.cell:focus {
   outline: none;
 }
 
-.kbd-navigation .square:focus {
-  background: #ddd;
+.cell:first-child {
+  border-left: 2px solid #626262;
 }
 
-.game {
-  display: flex;
-  flex-direction: row;
+.cell:nth-child(3n) {
+  border-right: 2px solid #626262;
+}
+
+.row:first-child .cell {
+  border-top: 2px solid #626262;
+}
+
+.row:nth-child(3n) .cell {
+  border-bottom: 2px solid #626262;
 }
 
 .game-info {
-  margin-left: 20px;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.puzzle-controls, .difficulty-controls {
+  margin-top: 10px;
+}
+
+button {
+  font-size: 18px;
+  margin: 0 3px;
 }
