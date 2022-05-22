@@ -8,25 +8,17 @@ class Cell extends React.Component<{
   handleCellChange: (row: number, column: number, value: number | undefined) => void
 }> {
   render() {
-    if (this.props.disabled) {
-      return (
-        <input 
-          type="text" 
-          className="cell" 
-          value={this.props.value || ''}
-          readOnly
-        />
-      );
-    } else {
-      return (
-        <input 
-          type="text" 
-          className="cell" 
-          value={this.props.value || ''}
-          onInput={(cell) => this.props.handleCellChange(this.props.row, this.props.column, parseInt(cell.currentTarget.value))}
-        />
-      );
-    }
+    return (
+      <input 
+        type="number" 
+        min={1}
+        max={9}
+        className="cell" 
+        value={this.props.value || ''}
+        readOnly={this.props.disabled}
+        onInput={(cell) => this.props.handleCellChange(this.props.row, this.props.column, parseInt(cell.currentTarget.value))}
+      />
+    );
   }
 }
 

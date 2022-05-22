@@ -25,7 +25,11 @@ class Game extends React.Component<{}, {
   
   handleCellChange(row: number, column: number, value: number | undefined) {
     let grid: (number | undefined)[][] = copy(this.state.currentGrid);
-    grid[row][column] = value;
+    if (!value) {
+        grid[row][column] = value;
+    } else if (value >=1 && value <= 9) {
+        grid[row][column] = value;
+    }
 
     this.setState({
       currentGrid: grid
