@@ -2,19 +2,20 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Grid from './grid';
-import Difficulty from './difficulty';
 import getNextPuzzle from './graphQlConnector';
+import {copy} from "./helpers";
+import {Difficulty, Digit} from "./definitions";
 
 class Game extends React.Component<{}, {
-  currentGrid: (number | undefined)[][],
-  currentPuzzle: (number | undefined)[][],
+  currentGrid: (Digit | undefined)[][],
+  currentPuzzle: (Digit | undefined)[][],
   difficulty: Difficulty
 }>
  {
   constructor(props: {}) {
     super(props);
     const difficulty: Difficulty = Difficulty.Random;
-    const puzzle: (number | undefined)[][] = getNextPuzzle(difficulty);
+    const puzzle: (Digit | undefined)[][] = getNextPuzzle(difficulty);
 
     this.state = {
       currentPuzzle: puzzle,
@@ -23,10 +24,10 @@ class Game extends React.Component<{}, {
     };
   }
   
-  handleCellChange(row: number, column: number, value: number | undefined) {
-    let grid: (number | undefined)[][] = copy(this.state.currentGrid);
+  handleCellChange(row: Digit, column: Digit, value: Digit | undefined) {
+    let grid: (Digit | undefined)[][] = copy(this.state.currentGrid);
     if (!value) {
-        grid[row][column] = value;
+        grid[row][column] = undefined;
     } else if (value >=1 && value <= 9) {
         grid[row][column] = value;
     }
@@ -42,11 +43,11 @@ class Game extends React.Component<{}, {
     });
   }
 
-  solve(puzzle: (number | undefined)[][]) {
+  solve(puzzle: (Digit | undefined)[][]) {
     console.log('Solving...');
   }
 
-  checkSolution(puzzle: (number | undefined)[][]) {
+  checkSolution(puzzle: (Digit | undefined)[][]) {
     console.log('Checking...');
   }
 
@@ -111,10 +112,6 @@ class Game extends React.Component<{}, {
       </div>
     );
   }
-}
-
-function copy(array: any): any {
-  return JSON.parse(JSON.stringify(array));
 }
 
 // ========================================

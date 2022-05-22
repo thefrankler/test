@@ -1,11 +1,12 @@
 import React from 'react';
+import {Digit} from "./definitions";
 
 class Cell extends React.Component<{
-  row: number,
-  column: number,
-  value: number | undefined,
+  row: Digit,
+  column: Digit,
+  value?: Digit,
   disabled: boolean,
-  handleCellChange: (row: number, column: number, value: number | undefined) => void
+  handleCellChange: (row: Digit, column: Digit, value: Digit | undefined) => void
 }> {
   render() {
     return (
@@ -16,7 +17,8 @@ class Cell extends React.Component<{
         className="cell" 
         value={this.props.value || ''}
         readOnly={this.props.disabled}
-        onInput={(cell) => this.props.handleCellChange(this.props.row, this.props.column, parseInt(cell.currentTarget.value))}
+        onInput={(cell) => this.props.handleCellChange(this.props.row, this.props.column, parseInt(cell.currentTarget.value) as Digit)}
+        onKeyDown={ e => ( e.keyCode === 69 || e.keyCode === 190 || e.keyCode === 189 ) && e.preventDefault() }
       />
     );
   }
