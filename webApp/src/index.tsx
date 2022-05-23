@@ -2,26 +2,30 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Grid from './grid';
-import getNextPuzzle from './graphQlConnector';
+import { getNextPuzzle } from './graphQlConnector';
 import {copy} from "./helpers";
-import {Difficulty, Digit} from "./definitions";
+import {blankPuzzle, Difficulty, Digit} from "./definitions";
 
 class Game extends React.Component<{}, {
   currentGrid: (Digit | undefined)[][],
   currentPuzzle: (Digit | undefined)[][],
-  difficulty: Difficulty
+  difficulty: Difficulty,
+  isLoading: boolean
 }>
  {
   constructor(props: {}) {
     super(props);
     const difficulty: Difficulty = Difficulty.Random;
-    const puzzle: (Digit | undefined)[][] = getNextPuzzle(difficulty);
+    const puzzle: (Digit | undefined)[][] = blankPuzzle;
 
     this.state = {
       currentPuzzle: puzzle,
       currentGrid: puzzle,
-      difficulty: difficulty
+      difficulty: difficulty,
+      isLoading: true
     };
+
+    this.nextPuzzle();
   }
   
   handleCellChange(row: Digit, column: Digit, value: Digit | undefined) {
@@ -52,12 +56,26 @@ class Game extends React.Component<{}, {
   }
 
   nextPuzzle() {
-    const puzzle = getNextPuzzle(this.state.difficulty);
-
     this.setState({
-      currentPuzzle: puzzle,
-      currentGrid: puzzle,
-    });
+      isLoading: true
+    })
+      
+    getNextPuzzle(this.state.difficulty)
+      .then((puzzle) => 
+        
+        this.setState({
+          currentPuzzle: puzzle,
+          currentGrid: puzzle,
+        })
+        
+      )
+      .catch(error => console.log(error))
+      
+      .finally(() => { 
+        this.setState({
+          isLoading: false
+        }) 
+      });
   }
 
   changeDifficulty(difficulty: Difficulty) {
@@ -78,6 +96,12 @@ class Game extends React.Component<{}, {
 
     return (
       <div className="game">
+        {this.state.isLoading && 
+            <div className="loading">
+                <div className="inner"></div>
+                <img src={require('./res/sliding-squares-2.gif')} alt="loading..." />
+            </div>
+        }
 
         <div className="grid">
           <Grid 

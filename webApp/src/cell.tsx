@@ -18,7 +18,7 @@ class Cell extends React.Component<{
         value={this.props.value || ''}
         readOnly={this.props.disabled}
         onInput={(cell) => this.props.handleCellChange(this.props.row, this.props.column, parseInt(cell.currentTarget.value) as Digit)}
-        onKeyDown={ e => ( e.keyCode === 69 || e.keyCode === 190 || e.keyCode === 189 ) && e.preventDefault() }
+        onKeyDown={ e => ( e.code === 'KeyE' || e.code === 'Period' || e.code === 'Minus' ) && e.preventDefault() }
       />
     );
   }
