@@ -1,4 +1,6 @@
 import {
+  blankPuzzle,
+  CellType,
   Difficulty,
   Digit,
   InvalidSolutionError,
@@ -30,27 +32,11 @@ export class GraphQLConnector {
           }
         `,
         variables: {
-          difficulty: Difficulty.Random
+          difficulty: Difficulty.Random.toUpperCase()
         }
       });
-    
-    debugger;
 
-    await new Promise(r => setTimeout(r, 2000));
-
-    return await Promise.resolve(
-    [
-        [1,2,3,4,5,6,7,8,9],
-        [1,2,3,4,5,6,7,8,9],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined],
-        [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined]
-      ]
-    )
+    return this.cellsToArray(result.data.newPuzzle.cells);
   }
 
   public async getSolution(puzzle: (Digit | undefined)[][]): Promise<(Digit | undefined)[][]> {
@@ -80,5 +66,14 @@ export class GraphQLConnector {
     return await Promise.resolve();
     // throw new NotCompleteError();
     // throw new InvalidSolutionError();
+  }
+  
+  private cellsToArray(cells: CellType[]): (Digit | undefined)[][] {
+    let grid: (Digit | undefined)[][] = blankPuzzle;
+    cells.forEach(function (cell) {
+      grid[cell.row][cell.column] = cell.value
+    });
+    
+    return grid;
   }
 }

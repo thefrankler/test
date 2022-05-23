@@ -19,6 +19,12 @@ export const blankPuzzle = [
   [undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined,undefined]
 ]
 
+export type CellType = {
+  row: Digit,
+  column: Digit,
+  value?: Digit
+}
+
 export class NoSolutionsError extends Error {
   constructor() {
     super("There are no solutions");
