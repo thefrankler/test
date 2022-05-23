@@ -1,5 +1,5 @@
 body {
-  font: 14px "Century Gothic", Futura, sans-serif;
+  font: 16px Arial, Helvetica, sans-serif;
   margin: 20px;
 }
 
@@ -103,4 +103,14 @@ button {
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
   max-width: 400px;
+}
+
+
+.message {
+  margin-top: 20px;
+  color: #03ad03;
+}
+
+.message.error {
+  color: #dd0505
 }

@@ -2,15 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Grid from './grid';
-import { getNextPuzzle } from './graphQlConnector';
+import {checkSolution, getNextPuzzle, getSolution} from './graphQlConnector';
 import {copy} from "./helpers";
-import {blankPuzzle, Difficulty, Digit} from "./definitions";
+import {blankPuzzle, Difficulty, Digit, MultipleSolutionsError, NoSolutionsError} from "./definitions";
 
 class Game extends React.Component<{}, {
   currentGrid: (Digit | undefined)[][],
   currentPuzzle: (Digit | undefined)[][],
   difficulty: Difficulty,
-  isLoading: boolean
+  isLoading: boolean,
+  message: {
+    error: boolean,
+    text: string
+  }
 }>
  {
   constructor(props: {}) {
@@ -22,13 +26,28 @@ class Game extends React.Component<{}, {
       currentPuzzle: puzzle,
       currentGrid: puzzle,
       difficulty: difficulty,
-      isLoading: true
+      isLoading: true,
+      message: {
+        error: false,
+        text: ''
+      }
     };
 
     this.nextPuzzle();
   }
   
+  resetMessage() {
+    this.setState({
+      message: {
+        error: false,
+        text: ""
+      }
+    })
+  }
+  
   handleCellChange(row: Digit, column: Digit, value: Digit | undefined) {
+    this.resetMessage();
+    
     let grid: (Digit | undefined)[][] = copy(this.state.currentGrid);
     if (!value) {
         grid[row][column] = undefined;
@@ -42,20 +61,76 @@ class Game extends React.Component<{}, {
   }
   
   reset() {
+    this.resetMessage();
+    
     this.setState({
       currentGrid: copy(this.state.currentPuzzle)
     });
   }
 
   solve(puzzle: (Digit | undefined)[][]) {
-    console.log('Solving...');
+    this.resetMessage();
+    this.setState({
+      isLoading: true
+    })
+
+    getSolution(this.state.currentGrid)
+      .then((solution) =>
+        this.setState({
+          currentGrid: solution,
+        })
+      )
+      
+      .catch(error => {
+        this.setState({
+          message: {
+            error: true,
+            text: error.message
+          }
+        })
+      })
+
+      .finally(() => {
+        this.setState({
+          isLoading: false
+        })
+      });
   }
 
   checkSolution(puzzle: (Digit | undefined)[][]) {
-    console.log('Checking...');
+    this.resetMessage();
+    this.setState({
+      isLoading: true
+    })
+
+    checkSolution(this.state.currentPuzzle, this.state.currentGrid)
+      .then(() =>
+        this.setState({
+          message: {
+            error: false,
+            text: "Congratulations, you have solved this puzzle!"
+          }
+        })
+      )
+
+      .catch(error => {
+        this.setState({
+          message: {
+            error: true,
+            text: error.message
+          }
+        })
+      })
+
+      .finally(() => {
+        this.setState({
+          isLoading: false
+        })
+      });
   }
 
   nextPuzzle() {
+    this.resetMessage();
     this.setState({
       isLoading: true
     })
@@ -130,6 +205,10 @@ class Game extends React.Component<{}, {
 
           <div className="difficulty-controls">
             {difficultyButtons}
+          </div>
+
+          <div className={"message " + (this.state.message.error ? 'error' : '')}>
+            {this.state.message.text}
           </div>
 
         </div>
