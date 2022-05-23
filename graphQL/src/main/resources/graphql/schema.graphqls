@@ -1,5 +1,5 @@
 type Query {
-  randomSudoku(difficulty: Difficulty): Sudoku
+  newPuzzle(difficulty: Difficulty): Sudoku
 }
 
 type Sudoku {

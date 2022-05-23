@@ -8,17 +8,10 @@ import sudokuSolver.app.models.Sudoku;
 @Component
 public class GraphQLDataFetchers {
 
-    public DataFetcher getRandomSudokuDataFetcher() {
+    public DataFetcher getNewPuzzleDataFetcher() {
         return dataFetchingEnvironment -> {
             Difficulty difficulty = Difficulty.valueOf(dataFetchingEnvironment.getArgument("difficulty"));
             return Sudoku.newPuzzle(difficulty);
-        };
-    }
-
-    public DataFetcher getCellsDataFetcher() {
-        return dataFetchingEnvironment -> {
-            Sudoku sudoku = dataFetchingEnvironment.getSource();
-            return sudoku.getCells();
         };
     }
 }

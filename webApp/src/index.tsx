@@ -2,9 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import Grid from './grid';
-import {checkSolution, getNextPuzzle, getSolution} from './graphQlConnector';
 import {copy} from "./helpers";
 import {blankPuzzle, Difficulty, Digit, MultipleSolutionsError, NoSolutionsError} from "./definitions";
+import {GraphQLConnector} from "./graphQlConnector";
+import {ApolloClient, InMemoryCache} from "@apollo/client";
 
 class Game extends React.Component<{}, {
   currentGrid: (Digit | undefined)[][],
@@ -16,7 +17,9 @@ class Game extends React.Component<{}, {
     text: string
   }
 }>
- {
+{
+  connector: GraphQLConnector;
+
   constructor(props: {}) {
     super(props);
     const difficulty: Difficulty = Difficulty.Random;
@@ -32,6 +35,13 @@ class Game extends React.Component<{}, {
         text: ''
       }
     };
+
+    this.connector = new GraphQLConnector(
+      new ApolloClient({
+        uri: 'http://localhost:8080/graphql',
+        cache: new InMemoryCache()
+      })
+    );
 
     this.nextPuzzle();
   }
@@ -74,7 +84,7 @@ class Game extends React.Component<{}, {
       isLoading: true
     })
 
-    getSolution(this.state.currentGrid)
+    this.connector.getSolution(this.state.currentGrid)
       .then((solution) =>
         this.setState({
           currentGrid: solution,
@@ -103,7 +113,7 @@ class Game extends React.Component<{}, {
       isLoading: true
     })
 
-    checkSolution(this.state.currentPuzzle, this.state.currentGrid)
+    this.connector.checkSolution(this.state.currentPuzzle, this.state.currentGrid)
       .then(() =>
         this.setState({
           message: {
@@ -134,8 +144,8 @@ class Game extends React.Component<{}, {
     this.setState({
       isLoading: true
     })
-      
-    getNextPuzzle(this.state.difficulty)
+
+    this.connector.getNextPuzzle(this.state.difficulty)
       .then((puzzle) => 
         
         this.setState({
