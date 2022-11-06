@@ -14,5 +14,11 @@ jupyter lab
 
 ## GraphQL Backend
 
-Run  the java app C:\stash\Sudoku-difficulty-tester\graphQL
+Ideally use IntelliJ.
+
+Run the java app C:\stash\Sudoku-difficulty-tester\graphQL
 Then the API should be available at http://localhost:8080/graphql
+
+## React Front End
+
+Run `npm start`, then the Web App should be available at http://localhost:3000/

@@ -8,7 +8,7 @@ import sudokuSolver.app.models.Sudoku;
 @Component
 public class GraphQLDataFetchers {
 
-    public DataFetcher getNewPuzzleDataFetcher() {
+    public DataFetcher<Sudoku> getNewPuzzleDataFetcher() {
         return dataFetchingEnvironment -> {
             Difficulty difficulty = Difficulty.valueOf(dataFetchingEnvironment.getArgument("difficulty"));
             return Sudoku.newPuzzle(difficulty);

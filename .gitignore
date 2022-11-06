@@ -20,8 +20,8 @@ target/
 *.iml
 *.ipr
 
-### Jupyter Notebook ###
-.ipynb_checkpoints/
+### VSCode ###
+.vscode
 
 
 # react
