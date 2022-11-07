@@ -48,6 +48,7 @@ class GraphQLConnector {
                 puzzle
             },
         });
+        // TODO: puzzles with 0 or multiple solutions don't throw errors nicely.
 
         return result.data;
     }

@@ -25,6 +25,7 @@ function Cell(props: CellProps) {
             onInput={(cell) => handleCellChange(row, column, parseInt(cell.currentTarget.value) as Digit)}
             onKeyDown={(e) => (e.code === 'KeyE' || e.code === 'Period' || e.code === 'Minus') && e.preventDefault()}
         />
+        // TODO: can't clear cells once you've typed in them
     );
 }
 
