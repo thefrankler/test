@@ -1,5 +1,6 @@
 type Query {
   newPuzzle(difficulty: Difficulty): Sudoku
+  solution(puzzle: [[Int]]): Sudoku
 }
 
 type Sudoku {

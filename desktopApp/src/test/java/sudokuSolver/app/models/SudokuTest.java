@@ -55,6 +55,18 @@ public class SudokuTest {
             {9, 1, 7, 4, 5, 3, 8, 6, 2}};
     Sudoku almostSolvedSudoku = new Sudoku(almostSolved);
 
+    int[][] badlySolved = {
+            {7, 8, 4, 3, 9, 2, 2, 0, 0},
+            {5, 3, 6, 1, 4, 8, 0, 0, 0},
+            {1, 2, 9, 7, 6, 5, 0, 0, 0},
+            {2, 4, 3, 8, 1, 6, 7, 9, 5},
+            {6, 9, 1, 5, 2, 7, 4, 3, 8},
+            {8, 7, 5, 9, 3, 4, 1, 2, 6},
+            {4, 6, 8, 2, 7, 9, 5, 1, 3},
+            {3, 5, 2, 6, 8, 1, 9, 4, 7},
+            {9, 1, 7, 4, 5, 3, 8, 6, 2}};
+    Sudoku badlySolvedSudoku = new Sudoku(badlySolved);
+
     @Test
     public void testEquals() {
         Sudoku clone = dummySudoku.clone();
@@ -102,6 +114,13 @@ public class SudokuTest {
         int solutions = almostSolvedSudoku.calculateSolutions().size();
         Assertions.assertEquals(1, solutions);
         Assertions.assertEquals(clone, almostSolvedSudoku);
+    }
+
+    @Test
+    public void testNoSolutions() {
+        Sudoku clone = badlySolvedSudoku.clone();
+        int solutions = badlySolvedSudoku.calculateSolutions().size();
+        Assertions.assertEquals(0, solutions);
     }
 
     @Test

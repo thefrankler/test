@@ -1,10 +1,10 @@
 import React from 'react';
 import Cell from './cell';
-import {Digit} from './util/types';
+import {Digit, Sudoku} from './util/types';
 
 type GridProps = {
-    grid: (Digit | undefined)[][],
-    puzzle: (Digit | undefined)[][],
+    grid: Sudoku,
+    puzzle: Sudoku,
     handleCellChange: (row: Digit, column: Digit, value: Digit | undefined) => void
 };
 

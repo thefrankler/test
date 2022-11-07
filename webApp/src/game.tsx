@@ -6,6 +6,7 @@ import {blankPuzzle} from './util/defaults';
 import {copy} from './util/helpers';
 import GraphQLConnector from './util/graphQlConnector';
 import {Grid} from "./grid";
+import {ApiSudokuToSudoku} from "./util/ApiMappings";
 
 function Game({}) {
     const [currentGrid, setCurrentGrid] = useState<Sudoku>(blankPuzzle);
@@ -58,13 +59,20 @@ function Game({}) {
         setIsLoading(true);
 
         connector.getSolution(currentGrid)
-            .then((solution) => setCurrentGrid(solution))
+            .then(({loading, error, solution}) => {
+                debugger;
+                if (loading) {
+                    setIsLoading(true);
+                }
+                if (error) {
+                    setMessage({
+                        error: true,
+                        text: error.message,
+                    });
+                }
 
-            .catch((error) => {
-                setMessage({
-                    error: true,
-                    text: error.message,
-                });
+                const solvedPuzzle = ApiSudokuToSudoku(solution.cells)
+                setCurrentGrid(solvedPuzzle);
             })
 
             .finally(() => {
@@ -99,15 +107,20 @@ function Game({}) {
         setIsLoading(true);
 
         connector.getNextPuzzle(difficulty)
-            .then((puzzle) => {
+            .then(({loading, error, newPuzzle}) => {
+                if (loading) {
+                    setIsLoading(true);
+                }
+                if (error) {
+                    setMessage({
+                        error: true,
+                        text: error.message,
+                    });
+                }
+
+                const puzzle = ApiSudokuToSudoku(newPuzzle.cells)
                 setCurrentPuzzle(puzzle);
                 setCurrentGrid(puzzle);
-            })
-            .catch((error) => {
-                setMessage({
-                    error: true,
-                    text: error.message,
-                });
             })
 
             .finally(() => {
