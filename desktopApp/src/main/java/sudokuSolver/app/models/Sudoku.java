@@ -360,7 +360,9 @@ public class Sudoku {
 
     //region Difficulty
     public Difficulty calculateDifficulty() throws NoSolutionsException {
-        return this.calculateDifficulty(30);
+        Difficulty calculatedDifficulty = this.calculateDifficulty(30);
+        System.out.println("Difficulty is " + calculatedDifficulty);
+        return calculatedDifficulty;
     }
 
     public Difficulty calculateDifficulty(int timeout) throws NoSolutionsException {

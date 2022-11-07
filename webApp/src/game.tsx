@@ -39,7 +39,7 @@ function Game({}) {
         resetMessage();
 
         const grid = copy(currentGrid);
-        if (!value) {
+        if (value === undefined) {
             grid[row][column] = undefined;
         } else if (value >= 1 && value <= 9) {
             grid[row][column] = value;
@@ -53,7 +53,7 @@ function Game({}) {
         setCurrentGrid(copy(currentPuzzle));
     };
 
-    const solve = (puzzle: Sudoku) => {
+    const solve = () => {
         resetMessage();
         setIsLoading(true);
 
@@ -72,7 +72,7 @@ function Game({}) {
             });
     };
 
-    const checkSolution = (puzzle: Sudoku) => {
+    const checkSolution = () => {
         resetMessage();
         setIsLoading(true);
 
@@ -103,22 +103,23 @@ function Game({}) {
                 setCurrentPuzzle(puzzle);
                 setCurrentGrid(puzzle);
             })
-            .catch((error) => console.log(error))
+            .catch((error) => {
+                setMessage({
+                    error: true,
+                    text: error.message,
+                });
+            })
 
             .finally(() => {
                 setIsLoading(false);
             });
     };
 
-    const changeDifficulty = (newDifficulty: Difficulty) => {
-        setDifficulty(newDifficulty);
-    };
-
     const difficultyButtons: JSX.Element[] = [];
-    Object.values(Difficulty).forEach((difficulty, i) => {
+    Object.values(Difficulty).forEach((difficultyValue, i) => {
         difficultyButtons.push(
-            <button key={i} disabled={difficulty === difficulty} onClick={() => changeDifficulty(difficulty)}>
-                {difficulty}
+            <button key={i} disabled={difficultyValue === difficulty} onClick={() => setDifficulty(difficultyValue)}>
+                {difficultyValue}
             </button>,
         );
     });
@@ -144,16 +145,16 @@ function Game({}) {
             <div className="game-info">
 
                 <div className="puzzle-controls">
-                    <button onClick={() => reset()}>
+                    <button onClick={reset}>
                         Reset
                     </button>
-                    <button onClick={() => checkSolution(currentGrid)}>
+                    <button onClick={checkSolution}>
                         Check solution
                     </button>
-                    <button onClick={() => solve(currentGrid)}>
+                    <button onClick={solve}>
                         Solve
                     </button>
-                    <button onClick={() => nextPuzzle()}>
+                    <button onClick={nextPuzzle}>
                         Next puzzle
                     </button>
                 </div>
