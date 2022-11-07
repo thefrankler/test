@@ -197,7 +197,7 @@ public class Sudoku {
     }
 
     public Sudoku minimise(Difficulty level) throws NoSolutionsException {
-        System.out.println("Minimising puzzle of difficulty " + level);
+        System.out.println("Minimising puzzle of difficulty " + level + "...");
 
         Sudoku sudoku = this.clone();
         Random rand = new Random();
@@ -237,7 +237,7 @@ public class Sudoku {
     }
 
     public static Sudoku randomPuzzle() {
-        System.out.println("Generating random puzzle");
+        System.out.println("Generating random puzzle...");
         Sudoku sudoku = new Sudoku();
         Random rand = new Random();
         long start = System.currentTimeMillis();
@@ -360,11 +360,13 @@ public class Sudoku {
 
     //region Difficulty
     public Difficulty calculateDifficulty() throws NoSolutionsException {
-        return this.calculateDifficulty(30);
+        Difficulty calculatedDifficulty = this.calculateDifficulty(30);
+        System.out.println("Difficulty is " + calculatedDifficulty);
+        return calculatedDifficulty;
     }
 
     public Difficulty calculateDifficulty(int timeout) throws NoSolutionsException {
-        System.out.println("Calculating difficulty");
+        System.out.println("Calculating difficulty...");
 
         //make list of unchecked cells
         ArrayList<int[]> cellCoordinateList = new ArrayList<>();
@@ -375,6 +377,7 @@ public class Sudoku {
         long start = System.currentTimeMillis();
         long finish = start + timeout*1000;
         if (difficulty != null) {
+            System.out.println("Difficulty is " + difficulty);
             return difficulty;
         }
 

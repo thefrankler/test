@@ -11,3 +11,16 @@ This will be done by solving the sudoku using "human" methods, and calculating t
 
 In order to start up Jupyter Lab, run the following command:
 jupyter lab
+
+## GraphQL Backend
+
+Ideally use IntelliJ.
+
+Run the java app C:\stash\Sudoku-difficulty-tester\graphQL
+Then the API should be available at http://localhost:8080/graphql
+
+## React Front End
+
+Ideally use Rider or VSCode
+
+Run `npm start`, then the Web App should be available at http://localhost:3000/
