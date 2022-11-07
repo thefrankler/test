@@ -21,4 +21,6 @@ Then the API should be available at http://localhost:8080/graphql
 
 ## React Front End
 
+Ideally use Rider or VSCode
+
 Run `npm start`, then the Web App should be available at http://localhost:3000/
