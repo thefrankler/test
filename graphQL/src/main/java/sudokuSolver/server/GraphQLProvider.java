@@ -53,6 +53,8 @@ public class GraphQLProvider {
                         .dataFetcher("newPuzzle", graphQLDataFetchers.getNewPuzzleDataFetcher()))
                 .type(newTypeWiring("Query")
                         .dataFetcher("solution", graphQLDataFetchers.getSolutionDataFetcher()))
+                .type(newTypeWiring("Query")
+                        .dataFetcher("checkSolution", graphQLDataFetchers.checkSolutionDataFetcher()))
                 .build();
     }
 }

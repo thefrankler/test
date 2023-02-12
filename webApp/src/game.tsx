@@ -80,11 +80,20 @@ function Game({}) {
         resetMessage();
         setIsLoading(true);
 
-        connector.checkSolution(currentPuzzle, currentGrid)
-            .then(() => setMessage({
-                error: false,
-                text: 'Congratulations, you have solved this puzzle!',
-            }))
+        connector.checkSolution(currentGrid)
+            .then(({checkSolution}) => {
+                if (checkSolution) {
+                    setMessage({
+                        error: false,
+                        text: 'Congratulations, you have solved this puzzle!',
+                    })
+                } else {
+                    setMessage({
+                        error: true,
+                        text: 'There is a mistake somewhere.',
+                    });
+                }
+            })
 
             .catch((error) => {
                 setMessage({

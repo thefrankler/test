@@ -27,4 +27,15 @@ public class GraphQLDataFetchers {
             return puzzle.getSolution();
         };
     }
+
+    public DataFetcher<Boolean> checkSolutionDataFetcher() {
+        return dataFetchingEnvironment -> {
+            ArrayList<ArrayList<Integer>> solutionList = dataFetchingEnvironment.getArgument("solution");
+            int[][] solutionArray = solutionList.stream()
+                    .map(row -> row.stream().mapToInt(Integer::intValue).toArray())
+                    .toArray(int[][]::new);
+            Sudoku solution = new Sudoku(solutionArray);
+            return solution.isSolved();
+        };
+    }
 }

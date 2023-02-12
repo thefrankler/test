@@ -1,6 +1,6 @@
 import {ApolloClient, gql, NormalizedCacheObject} from '@apollo/client';
 import {Difficulty, Sudoku,} from './types';
-import {GetNextPuzzleReturnType, GetSolutionReturnType} from "./graphqlTypes";
+import {GetCheckSolutionReturnType, GetNextPuzzleReturnType, GetSolutionReturnType} from "./graphqlTypes";
 
 class GraphQLConnector {
     constructor(private client: ApolloClient<NormalizedCacheObject>) {
@@ -50,12 +50,19 @@ class GraphQLConnector {
         return result.data;
     }
 
-    public async checkSolution(puzzle: Sudoku, solution: Sudoku): Promise<void> {
-        await new Promise((r) => setTimeout(r, 2000));
-
-        return Promise.resolve();
-        // throw new NotCompleteError();
-        // throw new InvalidSolutionError();
+    public async checkSolution(solution: Sudoku): Promise<GetCheckSolutionReturnType> {
+        const result = await this.client
+        .query({
+            query: gql`
+                query checkSolution($solution: [[Int]!]!) {
+                    checkSolution(solution: $solution)
+                }
+            `,
+            variables: {
+                solution
+            },
+        });
+        return result.data;
     }
 }
 

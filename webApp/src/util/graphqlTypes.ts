@@ -19,3 +19,7 @@ export type GetNextPuzzleReturnType = {
 export type GetSolutionReturnType = {
     solution: ApiSudoku
 }
+
+export type GetCheckSolutionReturnType = {
+    checkSolution: boolean
+}
