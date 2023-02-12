@@ -40,7 +40,7 @@ function Game({}) {
         resetMessage();
 
         const grid = copy(currentGrid);
-        if (value === undefined) {
+        if (value === undefined || isNaN(value)) {
             grid[row][column] = undefined;
         } else if (value >= 1 && value <= 9) {
             grid[row][column] = value;
@@ -59,20 +59,16 @@ function Game({}) {
         setIsLoading(true);
 
         connector.getSolution(currentGrid)
-            .then(({loading, error, solution}) => {
-                debugger;
-                if (loading) {
-                    setIsLoading(true);
-                }
-                if (error) {
-                    setMessage({
-                        error: true,
-                        text: error.message,
-                    });
-                }
-
+            .then(({solution}) => {
                 const solvedPuzzle = ApiSudokuToSudoku(solution.cells)
                 setCurrentGrid(solvedPuzzle);
+            })
+
+            .catch(error => {
+                setMessage({
+                    error: true,
+                    text: error.message,
+                })
             })
 
             .finally(() => {
@@ -107,17 +103,7 @@ function Game({}) {
         setIsLoading(true);
 
         connector.getNextPuzzle(difficulty)
-            .then(({loading, error, newPuzzle}) => {
-                if (loading) {
-                    setIsLoading(true);
-                }
-                if (error) {
-                    setMessage({
-                        error: true,
-                        text: error.message,
-                    });
-                }
-
+            .then(({newPuzzle}) => {
                 const puzzle = ApiSudokuToSudoku(newPuzzle.cells)
                 setCurrentPuzzle(puzzle);
                 setCurrentGrid(puzzle);

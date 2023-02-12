@@ -12,17 +12,10 @@ export type ApiSudoku = {
     difficulty: Difficulty
 }
 
-type ReturnTypeBase = {
-    loading: unknown,
-    error: {
-        message: string
-    }
-}
-
-export type GetNextPuzzleReturnType = ReturnTypeBase & {
+export type GetNextPuzzleReturnType = {
     newPuzzle: ApiSudoku
 }
 
-export type GetSolutionReturnType = ReturnTypeBase & {
+export type GetSolutionReturnType = {
     solution: ApiSudoku
 }
