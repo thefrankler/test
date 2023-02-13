@@ -1,6 +1,7 @@
 import {Sudoku} from "./types";
+import {copy} from "./helpers";
 
-export const blankPuzzle: Sudoku = [
+export const blankPuzzle = (): Sudoku => copy([
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -10,4 +11,4 @@ export const blankPuzzle: Sudoku = [
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0, 0],
-];
+]);

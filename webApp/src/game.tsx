@@ -9,8 +9,8 @@ import {Grid} from "./grid";
 import {ApiSudokuToSudoku} from "./util/ApiMappings";
 
 function Game({}) {
-    const [currentGrid, setCurrentGrid] = useState<Sudoku>(blankPuzzle);
-    const [currentPuzzle, setCurrentPuzzle] = useState<Sudoku>(blankPuzzle);
+    const [currentGrid, setCurrentGrid] = useState<Sudoku>(blankPuzzle());
+    const [currentPuzzle, setCurrentPuzzle] = useState<Sudoku>(blankPuzzle());
     const [difficulty, setDifficulty] = useState(Difficulty.Random);
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState({
