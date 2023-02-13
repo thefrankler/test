@@ -11,7 +11,7 @@ type GridProps = {
 export function Grid(props: GridProps) {
     const {grid, puzzle, handleCellChange} = props;
 
-    const renderCell = (row: Digit, column: Digit, value: Digit | undefined, disabled: boolean) => (
+    const renderCell = (row: Digit, column: Digit, value: Digit, disabled: boolean) => (
         <Cell
             key={row.toString() + column.toString()}
             row={row}
@@ -31,7 +31,7 @@ export function Grid(props: GridProps) {
 
             if (!value) {
                 cells.push(
-                    renderCell(row, column, undefined, false),
+                    renderCell(row, column, 0, false),
                 );
             } else if (value === puzzle[row][column]) {
                 cells.push(

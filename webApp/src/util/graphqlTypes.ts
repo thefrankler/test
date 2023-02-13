@@ -3,7 +3,7 @@ import {Difficulty, Digit} from "./types";
 export type ApiSudokuCells = {
     row: Digit,
     column: Digit,
-    value?: Digit
+    value: Digit
 }
 
 export type ApiSudoku = {

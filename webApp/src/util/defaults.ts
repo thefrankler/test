@@ -1,11 +1,13 @@
-export const blankPuzzle = [
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
-  [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined],
+import {Sudoku} from "./types";
+
+export const blankPuzzle: Sudoku = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];

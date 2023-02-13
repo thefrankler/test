@@ -4,7 +4,7 @@ import {Digit} from "./util/types";
 type CellProps = {
     row: Digit,
     column: Digit,
-    value?: Digit,
+    value: Digit,
     disabled: boolean,
     handleCellChange: (row: Digit, column: Digit, value: Digit | undefined) => void
 };

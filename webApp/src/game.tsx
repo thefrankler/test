@@ -12,7 +12,7 @@ function Game({}) {
     const [currentGrid, setCurrentGrid] = useState<Sudoku>(blankPuzzle);
     const [currentPuzzle, setCurrentPuzzle] = useState<Sudoku>(blankPuzzle);
     const [difficulty, setDifficulty] = useState(Difficulty.Random);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState({
         error: false,
         text: '',
@@ -41,7 +41,7 @@ function Game({}) {
 
         const grid = copy(currentGrid);
         if (value === undefined || isNaN(value)) {
-            grid[row][column] = undefined;
+            grid[row][column] = 0;
         } else if (value >= 1 && value <= 9) {
             grid[row][column] = value;
         }
