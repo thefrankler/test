@@ -2,15 +2,21 @@ import React, {useEffect, useState} from 'react';
 import './index.css';
 import {ApolloClient, InMemoryCache} from '@apollo/client';
 import {Difficulty, Digit, Sudoku} from './util/types';
-import {blankPuzzle} from './util/defaults';
 import {copy} from './util/helpers';
 import GraphQLConnector from './util/graphQlConnector';
 import {Grid} from "./grid";
 import {ApiSudokuToSudoku} from "./util/ApiMappings";
+import {useAppDispatch, useAppSelector} from "./store/hooks";
+import {setCurrentPuzzleDispatcher} from "./store/currentPuzzle";
+import {setCurrentGridDispatcher} from "./store/currentGrid";
 
 function Game({}) {
-    const [currentGrid, setCurrentGrid] = useState<Sudoku>(blankPuzzle());
-    const [currentPuzzle, setCurrentPuzzle] = useState<Sudoku>(blankPuzzle());
+    const dispatch = useAppDispatch();
+    const currentPuzzle = useAppSelector((state) => state.currentPuzzle.value);
+    const setCurrentPuzzle = (puzzle: Sudoku) => dispatch(setCurrentPuzzleDispatcher(puzzle));
+    const currentGrid = useAppSelector((state) => state.currentGrid.value);
+    const setCurrentGrid = (puzzle: Sudoku) => dispatch(setCurrentGridDispatcher(puzzle));
+
     const [difficulty, setDifficulty] = useState(Difficulty.Random);
     const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState({
@@ -113,7 +119,7 @@ function Game({}) {
 
         connector.getNextPuzzle(difficulty)
             .then(({newPuzzle}) => {
-                const puzzle = ApiSudokuToSudoku(newPuzzle.cells)
+                const puzzle = ApiSudokuToSudoku(newPuzzle.cells);
                 setCurrentPuzzle(puzzle);
                 setCurrentGrid(puzzle);
             })
