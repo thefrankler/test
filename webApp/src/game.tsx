@@ -7,14 +7,12 @@ import GraphQLConnector from './util/graphQlConnector';
 import {Grid} from "./grid";
 import {ApiSudokuToSudoku} from "./util/ApiMappings";
 import {useAppDispatch, useAppSelector} from "./store/hooks";
-import {setCurrentPuzzleDispatcher} from "./store/currentPuzzle";
-import {setCurrentGridDispatcher} from "./store/currentGrid";
+import {setCurrentGridDispatcher, setCurrentPuzzleDispatcher} from "./store/sudokuSlice";
 
 function Game({}) {
     const dispatch = useAppDispatch();
-    const currentPuzzle = useAppSelector((state) => state.currentPuzzle.value);
+    const {currentPuzzle, currentGrid} = useAppSelector((state) => state.sudoku.value);
     const setCurrentPuzzle = (puzzle: Sudoku) => dispatch(setCurrentPuzzleDispatcher(puzzle));
-    const currentGrid = useAppSelector((state) => state.currentGrid.value);
     const setCurrentGrid = (puzzle: Sudoku) => dispatch(setCurrentGridDispatcher(puzzle));
 
     const [difficulty, setDifficulty] = useState(Difficulty.Random);
@@ -26,7 +24,7 @@ function Game({}) {
 
     const connector = new GraphQLConnector(
         new ApolloClient({
-            uri: 'http://localhost:8080/graphql',
+            uri: 'http://localhost:8081/graphql',
             cache: new InMemoryCache(),
         }),
     );

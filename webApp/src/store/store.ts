@@ -1,11 +1,9 @@
 import {configureStore} from '@reduxjs/toolkit'
-import currentPuzzleReducer from './currentPuzzle'
-import currentGridReducer from './currentGrid'
+import sudokuReducer from './sudokuSlice'
 
 export const store = configureStore({
     reducer: {
-        currentPuzzle: currentPuzzleReducer,
-        currentGrid: currentGridReducer
+        sudoku: sudokuReducer,
     }
 })
 
