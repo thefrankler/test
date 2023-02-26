@@ -8,8 +8,15 @@ import {Grid} from "./grid";
 import {ApiSudokuToSudoku} from "./util/ApiMappings";
 import {useAppDispatch, useAppSelector} from "./store/hooks";
 import {setCurrentGridDispatcher, setCurrentPuzzleDispatcher} from "./store/sudokuSlice";
+import {Button, ButtonGroup, ToggleButton, ToggleButtonGroup} from "@mui/material";
+import ReplayIcon from '@mui/icons-material/Replay';
+import DoneIcon from '@mui/icons-material/Done';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+/* eslint-disable react/react-in-jsx-scope -- Unaware of jsxImportSource */
+/** @jsxImportSource @emotion/react */
+import {css} from '@emotion/react';
 
-function Game({}) {
+const Game = () => {
     const dispatch = useAppDispatch();
     const {currentPuzzle, currentGrid} = useAppSelector((state) => state.sudoku.value);
     const setCurrentPuzzle = (puzzle: Sudoku) => dispatch(setCurrentPuzzleDispatcher(puzzle));
@@ -130,9 +137,17 @@ function Game({}) {
     const difficultyButtons: JSX.Element[] = [];
     Object.values(Difficulty).forEach((difficultyValue, i) => {
         difficultyButtons.push(
-            <button key={i} disabled={difficultyValue === difficulty} onClick={() => setDifficulty(difficultyValue)}>
+            <ToggleButton key={i} value={difficultyValue}
+                          disabled={difficultyValue === difficulty}
+                          css={css`
+                            border: 1px solid rgba(46, 125, 50, 0.5);
+
+                            &.Mui-disabled {
+                              border: 1px solid rgba(46, 125, 50, 0.5);
+                            }
+                          `}>
                 {difficultyValue}
-            </button>,
+            </ToggleButton>,
         );
     });
 
@@ -156,23 +171,22 @@ function Game({}) {
 
             <div className="game-info">
 
-                <div className="puzzle-controls">
-                    <button onClick={reset}>
-                        Reset
-                    </button>
-                    <button onClick={checkSolution}>
-                        Check solution
-                    </button>
-                    <button onClick={solve}>
-                        Solve
-                    </button>
-                    <button onClick={nextPuzzle}>
-                        Next puzzle
-                    </button>
-                </div>
+                <ButtonGroup className="puzzle-controls" variant="outlined" aria-label="outlined primary button group">
+                    <Button onClick={reset} startIcon={<ReplayIcon/>}>Reset</Button>
+                    <Button color="success" onClick={checkSolution} startIcon={<DoneIcon/>}>Check solution</Button>
+                    <Button onClick={solve}>Solve</Button>
+                    <Button onClick={nextPuzzle} startIcon={<ArrowForwardIcon/>}>Next puzzle</Button>
+                </ButtonGroup>
 
                 <div className="difficulty-controls">
-                    {difficultyButtons}
+                    <ToggleButtonGroup value={difficulty}
+                                       exclusive
+                                       onChange={(
+                                           event: React.MouseEvent<HTMLElement>,
+                                           newDifficulty: Difficulty) => setDifficulty(newDifficulty)}
+                                       aria-label="text difficulty" size="small" color="success">
+                        {difficultyButtons}
+                    </ToggleButtonGroup>
                 </div>
 
                 <div className={`message ${message.error ? 'error' : ''}`}>

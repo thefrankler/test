@@ -8,7 +8,7 @@ type GridProps = {
     handleCellChange: (row: Digit, column: Digit, value: Digit | undefined) => void
 };
 
-export function Grid(props: GridProps) {
+export const Grid = (props: GridProps) => {
     const {grid, puzzle, handleCellChange} = props;
 
     const renderCell = (row: Digit, column: Digit, value: Digit, disabled: boolean) => (

@@ -9,7 +9,7 @@ type CellProps = {
     handleCellChange: (row: Digit, column: Digit, value: Digit | undefined) => void
 };
 
-function Cell(props: CellProps) {
+const Cell = (props: CellProps) => {
     const {
         row, column, value, disabled, handleCellChange,
     } = props;
