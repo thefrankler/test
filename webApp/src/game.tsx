@@ -12,10 +12,9 @@ import {Button, ButtonGroup, ToggleButton, ToggleButtonGroup} from "@mui/materia
 import ReplayIcon from '@mui/icons-material/Replay';
 import DoneIcon from '@mui/icons-material/Done';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+/* eslint-disable react/react-in-jsx-scope -- Unaware of jsxImportSource */
 /** @jsxImportSource @emotion/react */
 import {css} from '@emotion/react';
-import {useGetPostsQuery} from './store/apiSlice'
-import {skipToken} from "@reduxjs/toolkit/query";
 
 const Game = () => {
     const dispatch = useAppDispatch();
@@ -24,7 +23,7 @@ const Game = () => {
     const setCurrentGrid = (puzzle: Sudoku) => dispatch(setCurrentGridDispatcher(puzzle));
 
     const [difficulty, setDifficulty] = useState(Difficulty.Random);
-    const [showLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [message, setMessage] = useState({
         error: false,
         text: '',
@@ -36,43 +35,6 @@ const Game = () => {
             cache: new InMemoryCache(),
         }),
     );
-
-    const {
-        data: posts,
-        isLoading,
-        isSuccess,
-        isError,
-        error
-    } = useGetPostsQuery(2 ?? skipToken);
-
-    let content
-
-    if (isLoading) {
-        setIsLoading(true)
-    }
-    
-    if (error) {
-        if ('status' in error) {
-            // you can access all properties of `FetchBaseQueryError` here
-            const errMsg = 'error' in error ? error.error : JSON.stringify(error.data)
-
-            return (
-                <div>
-                    <div>An error has occurred:</div>
-                    <div>{errMsg}</div>
-                </div>
-            )
-        }
-        else {
-            // you can access all properties of `SerializedError` here
-            return <div>{error.message}</div>
-        }
-    }
-
-    if (data) {
-        setIsLoading(false)
-    }
-    
 
     useEffect(() => {
         nextPuzzle();
@@ -191,7 +153,7 @@ const Game = () => {
 
     return (
         <div className="game">
-            {showLoading
+            {isLoading
                 && (
                     <div className="loading">
                         <div className="inner"/>

@@ -17,7 +17,7 @@ jupyter lab
 Ideally use IntelliJ.
 
 Run the java app C:\stash\Sudoku-difficulty-tester\graphQL
-Then the API should be available at http://localhost:8080/graphql
+Then the API should be available at http://localhost:8081/graphql
 
 ## React Front End
 
