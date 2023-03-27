@@ -25,6 +25,10 @@ public class Cell {
         this.value = 0;
     }
 
+    public int getValue() {
+        return value;
+    }
+
     public Cell setValue(int value) {
         if (value > 0 && value <= 9) {
             this.value = value;
@@ -39,14 +43,6 @@ public class Cell {
         return this;
     }
 
-    public boolean isEmpty() {
-        return value == 0;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
     public int getRow() {
         return row;
     }
@@ -55,13 +51,17 @@ public class Cell {
         return column;
     }
 
+    public Vector<Integer> getOptions() {
+        return options;
+    }
+
     public Cell setOptions(Vector<Integer> options) {
         this.options = options;
         return this;
     }
 
-    public Vector<Integer> getOptions() {
-        return options;
+    public boolean isEmpty() {
+        return value == 0;
     }
 
     @Override

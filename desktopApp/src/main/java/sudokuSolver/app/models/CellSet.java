@@ -10,7 +10,7 @@ public class CellSet {
         set = new Cell[9];
     }
 
-    public CellSet(int[] array) {
+    protected CellSet(int[] array) {
         if (array.length != 9) {
             throw new IllegalArgumentException("CellSet input must be exactly 9 elements long");
         }
@@ -37,6 +37,15 @@ public class CellSet {
         return Arrays.asList(set);
     }
 
+    private boolean isFull() {
+        for (int index = 1; index < 9; index++) {
+            if (set[index].isEmpty()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean isSolved() {
         if (!isFull()) { return false;}
         // If any 2 Cells in a CellSet are equal, then it is not solved
@@ -45,15 +54,6 @@ public class CellSet {
                 if (set[compareColumn].getValue() == set[previousColumn].getValue()) {
                     return false;
                 }
-            }
-        }
-        return true;
-    }
-
-    public boolean isFull() {
-        for (int index = 1; index < 9; index++) {
-            if (set[index].isEmpty()) {
-                return false;
             }
         }
         return true;

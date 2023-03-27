@@ -14,17 +14,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class MainPanel extends JPanel implements ActionListener {
 
     static final long serialVersionUID = 42L;
 
-    public Sudoku sudoku;
-    public Difficulty currentLevel = Difficulty.RANDOM;
+    protected Difficulty currentLevel = Difficulty.RANDOM;
 
-    private JFrame parent;
-    private SudokuPanel sudokuPanel;
-    private ButtonPanel buttonPanel;
+    private final JFrame parent;
+    private final SudokuPanel sudokuPanel;
+    private final ButtonPanel buttonPanel;
     static private JPanel loadingPanel;
 
     public MainPanel(JFrame parent) {
@@ -48,6 +48,7 @@ public class MainPanel extends JPanel implements ActionListener {
     }
 
     public void actionPerformed(ActionEvent event) {
+        Sudoku sudoku;
         if (event.getSource() == buttonPanel.checkButton) {
             sudoku = sudokuPanel.readScreen();
 
@@ -66,7 +67,7 @@ public class MainPanel extends JPanel implements ActionListener {
                         options[0]);
                 if (successPanel == JOptionPane.DEFAULT_OPTION) {
                     return;
-                } else if (options[successPanel] == "Next puzzle") {
+                } else if (Objects.equals(options[successPanel], "Next puzzle")) {
                     getNext();
                 }
             } else {
@@ -109,7 +110,7 @@ public class MainPanel extends JPanel implements ActionListener {
         finishLoading();
     }
 
-    public Sudoku getSolution(Sudoku sudoku) {
+    private Sudoku getSolution(Sudoku sudoku) {
         try {
             return sudoku.getSolution();
         } catch (NoSolutionsException e) {
@@ -126,7 +127,7 @@ public class MainPanel extends JPanel implements ActionListener {
         return null;
     }
 
-    public static Sudoku randomPuzzle(Difficulty level) {
+    private static Sudoku randomPuzzle(Difficulty level) {
         try {
             return Sudoku.newPuzzle(level);
         } catch (NoSolutionsException e) {
@@ -138,7 +139,7 @@ public class MainPanel extends JPanel implements ActionListener {
         return null;
     }
 
-    public void createLoadingPanel() {
+    private void createLoadingPanel() {
 //        TODO: Use a separate thread for the loading animation, so it can run at the same time as calculations.
         loadingPanel = (JPanel) parent.getGlassPane();
         loadingPanel.setLayout(new BorderLayout());
@@ -158,7 +159,7 @@ public class MainPanel extends JPanel implements ActionListener {
         });
 
         int transparency = 200;
-        ImageIcon image = new ImageIcon(Main.class.getClassLoader().getResource("gif/sliding-squares-2.gif"));
+        ImageIcon image = new ImageIcon(Objects.requireNonNull(Main.class.getClassLoader().getResource("gif/sliding-squares-2.gif")));
 
         JLabel label = new JLabel(image) {
             protected void paintComponent(Graphics g)

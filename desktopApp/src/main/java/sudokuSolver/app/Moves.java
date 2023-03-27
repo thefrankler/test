@@ -20,7 +20,7 @@ public class Moves {
         return options;
     }
 
-    public static Set<Sudoku> nakedSingle(Sudoku sudoku) {
+    protected static Set<Sudoku> nakedSingle(Sudoku sudoku) {
         // only 1 option for a number in a particular cell
         Set<Sudoku> options = new LinkedHashSet();
 
@@ -37,7 +37,7 @@ public class Moves {
         return options;
     }
 
-    public static Set<Sudoku> hiddenSingle(Sudoku sudoku) {
+    protected static Set<Sudoku> hiddenSingle(Sudoku sudoku) {
         // only 1 number available in a particular row, column or box
         Set<Sudoku> options = new LinkedHashSet();
 

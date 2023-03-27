@@ -7,7 +7,7 @@ import javax.swing.text.*;
 import java.awt.*;
 
 public class SudokuPanel extends JPanel {
-    public JTextField[][] gridCells;
+    private final JTextField[][] gridCells;
 
     public SudokuPanel() {
         setPreferredSize(new Dimension(400, 400));

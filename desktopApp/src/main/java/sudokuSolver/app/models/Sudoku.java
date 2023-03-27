@@ -2,7 +2,6 @@ package sudokuSolver.app.models;
 
 import sudokuSolver.app.Moves;
 
-import javax.swing.*;
 import java.util.*;
 import static java.lang.Math.max;
 
@@ -60,7 +59,7 @@ public class Sudoku {
         return column;
     }
 
-    public CellSet getBox(int boxRow, int boxColumn) {
+    protected CellSet getBox(int boxRow, int boxColumn) {
         if (boxRow < 0 || boxRow >= 3) {
             throw new IllegalArgumentException("Box row must be an integer between 0 and 2, received " + boxRow);
         }
@@ -75,7 +74,7 @@ public class Sudoku {
         return box;
     }
 
-    public ArrayList<CellSet> getRows() {
+    private ArrayList<CellSet> getRows() {
         ArrayList<CellSet> rows = new ArrayList();
         for (int row = 0; row < 9; row++) {
             rows.add(this.getRow(row));
@@ -83,7 +82,7 @@ public class Sudoku {
         return rows;
     }
 
-    public ArrayList<CellSet> getColumns() {
+    private ArrayList<CellSet> getColumns() {
         ArrayList<CellSet> columns = new ArrayList();
         for (int column = 0; column < 9; column++) {
             columns.add(this.getColumn(column));
@@ -91,10 +90,10 @@ public class Sudoku {
         return columns;
     }
 
-    public ArrayList<CellSet> getBoxes() {
+    private ArrayList<CellSet> getBoxes() {
         ArrayList<CellSet> boxes = new ArrayList();
         for (int boxRow = 0; boxRow < 3; boxRow++) for (int boxColumn = 0; boxColumn < 3; boxColumn++)  {
-            boxes.add(this.getBox(boxRow, boxColumn));
+            boxes.add(getBox(boxRow, boxColumn));
         }
         return boxes;
     }
@@ -115,7 +114,7 @@ public class Sudoku {
         return cells;
     }
 
-    public Difficulty getDifficulty() {
+    protected Difficulty getDifficulty() {
         if (difficulty == null) {
             try {
                 difficulty = calculateDifficulty();
@@ -163,7 +162,7 @@ public class Sudoku {
         return this.cellOptions(cell.getRow(), cell.getColumn());
     }
 
-    public Vector<Integer> cellOptions(int rowIndex, int columnIndex) {
+    protected Vector<Integer> cellOptions(int rowIndex, int columnIndex) {
         int[] isDigitForbidden = new int[9];
         Vector<Integer> options = new Vector<>();
         Cell cell = this.getCell(rowIndex, columnIndex);
@@ -196,7 +195,7 @@ public class Sudoku {
         return options;
     }
 
-    public Sudoku minimise(Difficulty level) throws NoSolutionsException {
+    private Sudoku minimise(Difficulty level) throws NoSolutionsException {
         System.out.println("Minimising puzzle of difficulty " + level + "...");
 
         Sudoku sudoku = this.clone();
@@ -236,7 +235,7 @@ public class Sudoku {
         return sudoku;
     }
 
-    public static Sudoku randomPuzzle() {
+    private static Sudoku randomPuzzle() {
         System.out.println("Generating random puzzle...");
         Sudoku sudoku = new Sudoku();
         Random rand = new Random();
@@ -288,7 +287,7 @@ public class Sudoku {
         return sudoku;
     }
 
-    public Sudoku bruteSolve() throws NoSolutionsException, MultipleSolutionsException {
+    private Sudoku bruteSolve() throws NoSolutionsException, MultipleSolutionsException {
         if (solution == null) {
             HashSet<Sudoku> solutions = calculateSolutions();
             if (solutions.size() == 0) {
@@ -307,7 +306,7 @@ public class Sudoku {
         }
     }
 
-    public HashSet<Sudoku> calculateSolutions() {
+    protected HashSet<Sudoku> calculateSolutions() {
         Stack<Sudoku> options = new Stack<>();
         HashSet<Sudoku> solutions = new HashSet<>();
 
@@ -359,13 +358,13 @@ public class Sudoku {
     //endregion
 
     //region Difficulty
-    public Difficulty calculateDifficulty() throws NoSolutionsException {
+    private Difficulty calculateDifficulty() throws NoSolutionsException {
         Difficulty calculatedDifficulty = this.calculateDifficulty(30);
         System.out.println("Difficulty is " + calculatedDifficulty);
         return calculatedDifficulty;
     }
 
-    public Difficulty calculateDifficulty(int timeout) throws NoSolutionsException {
+    private Difficulty calculateDifficulty(int timeout) throws NoSolutionsException {
         System.out.println("Calculating difficulty...");
 
         //make list of unchecked cells

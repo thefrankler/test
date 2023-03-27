@@ -2,7 +2,6 @@ package sudokuSolver.app.models;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import sudokuSolver.app.panels.MainPanel;
 
 import java.util.Vector;
 
